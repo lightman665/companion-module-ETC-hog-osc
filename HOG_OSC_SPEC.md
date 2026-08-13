@@ -338,3 +338,36 @@ Comentado na issue **#7** do repositório `bitfocus/companion-module-highend-hog
 Relacionadas no módulo `generic-osc`: issues **#76**, **#78**, **#82** — todas a pedir
 captura de valor por caminho para variável. Continuam por implementar na v2.8.2, que é a
 versão mais recente.
+
+---
+
+## 15. Nomes longos e espaços — quebra de linha imprevisível entre line1/line2
+
+Confirmado por teste em 2026-08-13: a consola faz **word-wrap automático** do nome do objeto
+entre `line1` e `line2` quando não cabe numa só linha, partindo no espaço mais próximo do
+limite.
+
+| Nome atribuído | `line1` | `line2` |
+|---|---|---|
+| `"again"` (5 carateres) | `again` | *(vazio)* |
+| `"test SC"` (7 carateres, com espaço) | `test` | `SC` |
+
+Isto **não é** um indicador de tipo de objeto (ver descoberta falsa em baixo) — é apenas
+comportamento de quebra de linha do ecrã físico da consola, aplicável a qualquer objeto
+(cuelist, scene, macro) cujo nome seja demasiado longo.
+
+**Descoberta falsa, corrigida:** inicialmente pareceu que `line2 === "SCENE"` distinguia uma
+scene de uma cuelist — coincidência: o nome de teste da scene continha literalmente a palavra
+"SCENE", que calhou de ficar isolada em `line2` após a quebra. **Não existe nenhum campo OSC
+que indique o tipo do objeto** (cuelist vs. scene vs. macro). Ver §13 do README do módulo para
+a conclusão de design (estilo por botão tem de ser escolhido manualmente pelo operador).
+
+**Fio solto, não confirmado:** durante um rename ao vivo, `line2` mostrou momentaneamente o
+texto a ser digitado (ex. `"222"`) enquanto `line1` ainda tinha o nome antigo confirmado —
+possível eco de digitação em tempo real antes do Enter, semelhante ao `commandline` (§3.5).
+Por confirmar se o mesmo acontece com cuelists, não só scenes.
+
+**Limitação a reportar à ETC:** não há forma de reconstruir o nome completo original a partir
+de `line1`+`line2` de forma fiável — nem sempre a quebra acontece num espaço previsível, e o
+próprio comportamento pode mudar em versões futuras do Hog OS. Vale a pena testar novamente
+após cada atualização da consola.
