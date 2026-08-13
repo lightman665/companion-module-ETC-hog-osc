@@ -1,5 +1,12 @@
+import type { DropdownChoice } from '@companion-module/base'
+
 const LINE_PATH = /^\/hog\/status\/h(\d+)\/(line[12])$/
 const LED_PATH = /^\/hog\/status\/led\/h(\d+)(color)?$/
+
+export const COMMAND_KEY_CHOICES: DropdownChoice[] = Array.from({ length: 12 }, (_, i) => ({
+  id: i + 1,
+  label: `Command Key ${i + 1}`,
+}))
 
 export type CommandKeyField = 'line1' | 'line2' | 'led' | 'color'
 
@@ -36,4 +43,13 @@ export function parseCommandKeyPath(oscPath: string): CommandKeyUpdate | undefin
   if (physicalKey < 1 || physicalKey > 12) return undefined
 
   return { physicalKey, field }
+}
+
+/**
+ * The +1 offset applies to sending too (§5: "Aplica-se tanto ao envio... como
+ * à receção"). Unlike parseCommandKeyPath, there's no h1 special case here -
+ * a simulated press is never ambiguous the way an incoming full-dump is.
+ */
+export function toWireKey(physicalKey: number): number {
+  return physicalKey + 1
 }

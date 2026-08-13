@@ -1,8 +1,13 @@
 import {
   InstanceBase,
   InstanceStatus,
+  type CompanionActionSchemaWithoutResult,
+  type CompanionActionSchemaWithResult,
+  type CompanionFeedbackSchema,
+  type CompanionOptionValues,
   type CompanionVariableValues,
   type InstanceTypes,
+  type JsonValue,
   type SharedUdpSocket,
   type SomeCompanionConfigField,
 } from '@companion-module/base'
@@ -14,13 +19,18 @@ import { parseNamedButtonPath, toVariableId } from './namedButtons.js'
 import { parseMasterPath } from './masters.js'
 import { parseEncoderPath } from './encoders.js'
 import { SYSTEM_PATH_VARIABLES } from './systemPaths.js'
+import { createActionDefinitions } from './actions.js'
+import { createFeedbackDefinitions } from './feedbacks.js'
 import { HogState } from './state.js'
 
 interface HogInstanceTypes extends InstanceTypes {
   config: HogConfig
   secrets: undefined
-  actions: Record<string, never>
-  feedbacks: Record<string, never>
+  actions: Record<
+    string,
+    CompanionActionSchemaWithoutResult<CompanionOptionValues> | CompanionActionSchemaWithResult<CompanionOptionValues, JsonValue>
+  >
+  feedbacks: Record<string, CompanionFeedbackSchema<CompanionOptionValues>>
   variables: CompanionVariableValues
 }
 
@@ -32,6 +42,8 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
   async init(config: HogConfig): Promise<void> {
     this.config = config
     this.setVariableDefinitions(getVariableDefinitions())
+    this.setActionDefinitions(createActionDefinitions((path, value) => this.sendToConsole(path, value)))
+    this.setFeedbackDefinitions(createFeedbackDefinitions((variableId) => this.getVariableValue(variableId)))
     this.startListening()
   }
 
@@ -67,6 +79,10 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
   private stopListening(): void {
     this.socket?.close()
     this.socket = undefined
+  }
+
+  private sendToConsole(path: string, value: number): void {
+    this.oscSend(this.config.host, this.config.sendPort, path, value)
   }
 
   private handleMessage(buf: Buffer): void {
