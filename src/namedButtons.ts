@@ -29,6 +29,11 @@ export const NAMED_BUTTONS = [
 
 export type NamedButton = (typeof NAMED_BUTTONS)[number]
 
+export const NAMED_BUTTON_CHOICES: { id: NamedButton; label: string }[] = NAMED_BUTTONS.map((name) => ({
+  id: name,
+  label: name,
+}))
+
 const NAMED_BUTTON_SET: ReadonlySet<string> = new Set(NAMED_BUTTONS)
 
 /** Companion variable ids can't contain spaces, so "go back" -> "go_back". */

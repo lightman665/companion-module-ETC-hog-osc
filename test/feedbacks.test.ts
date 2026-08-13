@@ -20,3 +20,18 @@ test('command_key_led is false when off or unset', () => {
   assert.equal((feedbacks.command_key_led as any).callback(fakeFeedback({ key: 1 }), {}), false)
   assert.equal((feedbacks.command_key_led as any).callback(fakeFeedback({ key: 9 }), {}), false)
 })
+
+test('named_button_led is true when the button led variable is 1', () => {
+  const values: Record<string, unknown> = { blind_led: 1, clear_led: 0, go_back_led: 1 }
+  const feedbacks = createFeedbackDefinitions((id) => values[id])
+
+  assert.equal((feedbacks.named_button_led as any).callback(fakeFeedback({ button: 'blind' }), {}), true)
+  assert.equal((feedbacks.named_button_led as any).callback(fakeFeedback({ button: 'clear' }), {}), false)
+})
+
+test('named_button_led handles button names with spaces via toVariableId', () => {
+  const values: Record<string, unknown> = { go_back_led: 1 }
+  const feedbacks = createFeedbackDefinitions((id) => values[id])
+
+  assert.equal((feedbacks.named_button_led as any).callback(fakeFeedback({ button: 'go back' }), {}), true)
+})
