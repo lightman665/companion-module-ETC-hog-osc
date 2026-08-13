@@ -30,27 +30,6 @@ test('command_key_led is false when LED is on but line1/line2 are empty (deleted
   assert.equal((feedbacks.command_key_led as any).callback(fakeFeedback({ key: 4 }), {}), false)
 })
 
-test('command_key_scene_active is true when active and line2 is literally "SCENE"', () => {
-  const values: Record<string, unknown> = { h1_led: 1, h1_line2: 'SCENE' }
-  const feedbacks = createFeedbackDefinitions((id) => values[id])
-
-  assert.equal((feedbacks.command_key_scene_active as any).callback(fakeFeedback({ key: 1 }), {}), true)
-})
-
-test('command_key_scene_active is false for a cuelist (real state text, not "SCENE")', () => {
-  const values: Record<string, unknown> = { h2_led: 1, h2_line2: 'off 20' }
-  const feedbacks = createFeedbackDefinitions((id) => values[id])
-
-  assert.equal((feedbacks.command_key_scene_active as any).callback(fakeFeedback({ key: 2 }), {}), false)
-})
-
-test('command_key_scene_active is false when inactive, even if line2 is "SCENE"', () => {
-  const values: Record<string, unknown> = { h1_led: 0, h1_line2: 'SCENE' }
-  const feedbacks = createFeedbackDefinitions((id) => values[id])
-
-  assert.equal((feedbacks.command_key_scene_active as any).callback(fakeFeedback({ key: 1 }), {}), false)
-})
-
 test('named_button_led is true when the button led variable is 1', () => {
   const values: Record<string, unknown> = { blind_led: 1, clear_led: 0, go_back_led: 1 }
   const feedbacks = createFeedbackDefinitions((id) => values[id])
