@@ -21,6 +21,20 @@ export function createFeedbackDefinitions(getVariableValue: GetVariableValue): C
         return led && (line1.length > 0 || line2.length > 0)
       },
     },
+    command_key_scene_active: {
+      type: 'boolean',
+      name: 'Command Key showing an active Scene',
+      description:
+        'True when the key is active AND line2 is literally "SCENE" - the console labels scene assignments this way instead of showing real state text, which is the only way to tell a scene apart from a cuelist in the data. Use this instead of Command Key LED aceso on keys that hold scenes, to show a different indicator color.',
+      options: [{ id: 'key', type: 'dropdown', label: 'Command key', choices: COMMAND_KEY_CHOICES, default: 1 }],
+      defaultStyle: { bgcolor: combineRgb(0, 0, 255) },
+      callback: (feedback) => {
+        const key = Number(feedback.options.key)
+        const led = Number(getVariableValue(`h${key}_led`)) === 1
+        const line2 = String(getVariableValue(`h${key}_line2`) ?? '').trim()
+        return led && line2 === 'SCENE'
+      },
+    },
     named_button_led: {
       type: 'boolean',
       name: 'Named Button LED aceso',
