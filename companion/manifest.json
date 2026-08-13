@@ -1,0 +1,26 @@
+{
+  "id": "etc-hog-osc",
+  "name": "ETC/High End Systems Hog OSC",
+  "shortname": "hog-osc",
+  "description": "Native OSC integration for High End Systems Hog consoles (Hog OS 4/5). Replaces the generic-osc + triggers workaround with a proper per-path variable dictionary, per HOG_OSC_SPEC.md.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": "https://github.com/lightman665/companion-module-ETC-hog-osc",
+  "bugs": "https://github.com/lightman665/companion-module-ETC-hog-osc/issues",
+  "maintainers": [
+    {
+      "name": "lightman665",
+      "email": ""
+    }
+  ],
+  "runtime": {
+    "type": "node18",
+    "api": "nodejs-ipc",
+    "apiVersion": "1.1.0",
+    "entrypoint": "dist/main.js"
+  },
+  "manufacturer": "High End Systems",
+  "products": ["Hog 4", "Hog OS"],
+  "keywords": ["lighting", "osc", "hog"],
+  "legacyIds": []
+}

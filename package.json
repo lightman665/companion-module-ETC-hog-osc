@@ -1,0 +1,21 @@
+{
+  "name": "companion-module-etc-hog-osc",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "lint": "eslint src test"
+  },
+  "dependencies": {
+    "@companion-module/base": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}
