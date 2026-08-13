@@ -99,6 +99,7 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
       this.setVariableValues({
         [`h${commandKey.physicalKey}_${commandKey.field}`]: value,
       })
+      this.checkFeedbacks('command_key_led')
       return
     }
 
@@ -107,6 +108,7 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
       this.setVariableValues({
         [`${toVariableId(namedButton.button)}_${namedButton.field}`]: value,
       })
+      this.checkFeedbacks('named_button_led')
       return
     }
 
