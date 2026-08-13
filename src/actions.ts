@@ -5,11 +5,16 @@ export type SendOsc = (path: string, value: number) => void
 
 /**
  * pig/release/blind/highlight/clear are confirmed in HOG_OSC_SPEC.md §4.
- * record/merge/copy/next/back/all are from the official ETC Hog Operations
+ * record/merge/copy/next/back are from the official ETC Hog Operations
  * Manual (§22.4.2) but NOT yet verified against a real console the way
  * everything else in this module is - the same manual already documented
  * refresh commands that turned out not to work (spec §9), so treat these
- * six as unconfirmed until tested.
+ * five as unconfirmed until tested.
+ *
+ * "all" is deliberately NOT in this list: the manual documents
+ * /hog/hardware/all as a single path, but real testing showed the console's
+ * "select all active in the programmer" is actually a Back+Next chord, not
+ * a dedicated key - see select_all_in_programmer below.
  */
 const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'pig',
@@ -22,7 +27,6 @@ const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'copy',
   'next',
   'back',
-  'all',
 ].map((id) => ({
   id,
   label: id,
@@ -66,6 +70,23 @@ export function createActionDefinitions(send: SendOsc): CompanionActionDefinitio
       options: [{ id: 'button', type: 'dropdown', label: 'Button', choices: HARDWARE_BUTTON_CHOICES, default: 'pig' }],
       callback: (action) => {
         send(`/hog/hardware/${String(action.options.button)}`, 0)
+      },
+    },
+    press_select_all_in_programmer: {
+      name: 'Select All in Programmer (Back+Next chord): Press',
+      description: 'Confirmed by testing: this is not a dedicated hardware key, the console triggers it via Back+Next pressed together.',
+      options: [],
+      callback: () => {
+        send('/hog/hardware/back', 1)
+        send('/hog/hardware/next', 1)
+      },
+    },
+    release_select_all_in_programmer: {
+      name: 'Select All in Programmer (Back+Next chord): Release',
+      options: [],
+      callback: () => {
+        send('/hog/hardware/back', 0)
+        send('/hog/hardware/next', 0)
       },
     },
     release_playback_item: {

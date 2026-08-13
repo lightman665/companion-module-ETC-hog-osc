@@ -43,6 +43,19 @@ test('press/release hardware button also works for the new manual-sourced button
   ])
 })
 
+test('select_all_in_programmer sends the Back+Next chord', () => {
+  const sent: Array<[string, number]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.press_select_all_in_programmer as any).callback(fakeAction({}), {})
+  ;(actions.release_select_all_in_programmer as any).callback(fakeAction({}), {})
+  assert.deepEqual(sent, [
+    ['/hog/hardware/back', 1],
+    ['/hog/hardware/next', 1],
+    ['/hog/hardware/back', 0],
+    ['/hog/hardware/next', 0],
+  ])
+})
+
 test('release_playback_item sends the item number to the right typed path', () => {
   const sent: Array<[string, number]> = []
   const actions = createActionDefinitions((path, value) => sent.push([path, value]))
