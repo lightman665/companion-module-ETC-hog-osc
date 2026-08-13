@@ -9,11 +9,16 @@ export function createFeedbackDefinitions(getVariableValue: GetVariableValue): C
     command_key_led: {
       type: 'boolean',
       name: 'Command Key LED aceso',
+      description:
+        'Requires both the LED variable and an actual assignment (line1/line2 not empty). The console can send these in separate bursts (§12), so LED alone can briefly stay 1 after a key is deleted - checking assignment too avoids a stuck-on indicator.',
       options: [{ id: 'key', type: 'dropdown', label: 'Command key', choices: COMMAND_KEY_CHOICES, default: 1 }],
       defaultStyle: { bgcolor: combineRgb(255, 0, 0) },
       callback: (feedback) => {
         const key = Number(feedback.options.key)
-        return Number(getVariableValue(`h${key}_led`)) === 1
+        const led = Number(getVariableValue(`h${key}_led`)) === 1
+        const line1 = String(getVariableValue(`h${key}_line1`) ?? '').trim()
+        const line2 = String(getVariableValue(`h${key}_line2`) ?? '').trim()
+        return led && (line1.length > 0 || line2.length > 0)
       },
     },
     named_button_led: {
