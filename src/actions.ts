@@ -3,7 +3,26 @@ import { COMMAND_KEY_CHOICES, toWireKey } from './commandKeys.js'
 
 export type SendOsc = (path: string, value: number) => void
 
-const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = ['pig', 'release', 'blind', 'highlight', 'clear'].map((id) => ({
+/**
+ * pig/release/blind/highlight/clear are confirmed in HOG_OSC_SPEC.md §4.
+ * record/merge/copy/next/back are from the official ETC Hog Operations
+ * Manual (§22.4.2) but NOT yet verified against a real console the way
+ * everything else in this module is - the same manual already documented
+ * refresh commands that turned out not to work (spec §9), so treat these
+ * five as unconfirmed until tested.
+ */
+const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
+  'pig',
+  'release',
+  'blind',
+  'highlight',
+  'clear',
+  'record',
+  'merge',
+  'copy',
+  'next',
+  'back',
+].map((id) => ({
   id,
   label: id,
 }))

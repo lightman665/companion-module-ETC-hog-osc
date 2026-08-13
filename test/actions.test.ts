@@ -32,6 +32,17 @@ test('press/release hardware button sends the raw button name', () => {
   ])
 })
 
+test('press/release hardware button also works for the new manual-sourced buttons', () => {
+  const sent: Array<[string, number]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.press_hardware_button as any).callback(fakeAction({ button: 'record' }), {})
+  ;(actions.release_hardware_button as any).callback(fakeAction({ button: 'next' }), {})
+  assert.deepEqual(sent, [
+    ['/hog/hardware/record', 1],
+    ['/hog/hardware/next', 0],
+  ])
+})
+
 test('release_playback_item sends the item number to the right typed path', () => {
   const sent: Array<[string, number]> = []
   const actions = createActionDefinitions((path, value) => sent.push([path, value]))
