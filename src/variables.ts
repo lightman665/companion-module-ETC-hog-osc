@@ -1,10 +1,12 @@
 import type { CompanionVariableDefinition } from '@companion-module/base'
 import { NAMED_BUTTONS, toVariableId } from './namedButtons.js'
+import { MASTER_ACTIONS_WITH_COLOR, MASTER_COUNT } from './masters.js'
 
 /**
  * One variable per command-key field, indexed by physical key (1..12, offset
  * already resolved — see commandKeys.ts), plus one per named front-panel
- * button. Playback masters and encoder wheels follow in later PRs.
+ * button, plus one per playback-master action. Encoder wheels and system
+ * variables follow in a later PR.
  */
 export function getVariableDefinitions(): Record<string, CompanionVariableDefinition> {
   const defs: Record<string, CompanionVariableDefinition> = {}
@@ -20,6 +22,14 @@ export function getVariableDefinitions(): Record<string, CompanionVariableDefini
     const id = toVariableId(button)
     defs[`${id}_led`] = { name: `Botão "${button}" — LED aceso` }
     defs[`${id}_color`] = { name: `Botão "${button}" — cor do LED` }
+  }
+
+  for (let master = 0; master < MASTER_COUNT; master++) {
+    for (const action of MASTER_ACTIONS_WITH_COLOR) {
+      defs[`master${master}_${action}`] = { name: `Master ${master} — ${action} aceso` }
+      defs[`master${master}_${action}_color`] = { name: `Master ${master} — ${action} cor` }
+    }
+    defs[`master${master}_choose`] = { name: `Master ${master} — choose aceso` }
   }
 
   return defs
