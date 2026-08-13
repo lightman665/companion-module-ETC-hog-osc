@@ -256,10 +256,12 @@ A tecla 12 por vezes provoca o envio de um endereço malformado:
 em vez dos esperados `/hog/status/led/h13` e `/hog/status/led/h13color`.
 Capturado ao nível do pacote, correlacionado com a ativação de h13.
 
-**Hipótese não confirmada:** quando existem **mais de 12 comandos** atribuídos, a tecla
-física 12 passa a funcionar como **mudança de página de comandos**, em vez de disparar um
-comando normal. Isto poderá ser a causa real do comportamento, e não um defeito da tecla.
-**Falta testar** com exatamente 12 comandos.
+**Hipótese confirmada (2026-08-13):** a tecla física 12 funciona como **mudança de página do
+diretório de comandos**, alternando a vista em blocos de 12 em 12 — não é um defeito da tecla,
+é o comportamento normal da consola quando há mais de 12 comandos disponíveis. Confirmado por
+conhecimento direto do operador sobre o funcionamento da consola (não capturado ao nível do
+pacote como o resto deste documento). Isto explica o endereço malformado: ao mudar de página,
+a tecla 12 deixa de corresponder a um `h<N>` fixo, daí o endereço `Invalid input`.
 
 O módulo deve tolerar endereços malformados sem falhar.
 
