@@ -32,6 +32,20 @@ const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   label: id,
 }))
 
+/**
+ * Confirmed by testing 2026-08-13 (HOG_OSC_SPEC.md §16) plus the ETC-provided PDF in
+ * https://github.com/bitfocus/companion-module-highend-hog4/issues/24: single-press U-Keys
+ * use /hog/hardware/u<N>, no offset (u1 is u1). There are 12 U-Keys total, each also
+ * supporting double-press, Pig+U-key, and Open+U-key modes, but only single-press has been
+ * verified against a real console - the other 3 modes are not implemented until captured.
+ * No feedback exists for U-Keys: each key's function is configured in the console's user
+ * preferences, not broadcast over OSC like command key assignments are.
+ */
+const U_KEY_CHOICES: DropdownChoice[] = Array.from({ length: 12 }, (_, i) => ({
+  id: i + 1,
+  label: `U${i + 1}`,
+}))
+
 const PLAYBACK_ITEM_CHOICES: DropdownChoice[] = [
   { id: 0, label: 'Cuelist' },
   { id: 1, label: 'Scene' },
@@ -87,6 +101,20 @@ export function createActionDefinitions(send: SendOsc): CompanionActionDefinitio
       callback: () => {
         send('/hog/hardware/back', 0)
         send('/hog/hardware/next', 0)
+      },
+    },
+    press_u_key: {
+      name: 'U-Key: Press (single press)',
+      options: [{ id: 'key', type: 'dropdown', label: 'U-Key', choices: U_KEY_CHOICES, default: 1 }],
+      callback: (action) => {
+        send(`/hog/hardware/u${Number(action.options.key)}`, 1)
+      },
+    },
+    release_u_key: {
+      name: 'U-Key: Release (single press)',
+      options: [{ id: 'key', type: 'dropdown', label: 'U-Key', choices: U_KEY_CHOICES, default: 1 }],
+      callback: (action) => {
+        send(`/hog/hardware/u${Number(action.options.key)}`, 0)
       },
     },
     release_playback_item: {

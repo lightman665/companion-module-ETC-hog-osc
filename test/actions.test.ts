@@ -56,6 +56,17 @@ test('select_all_in_programmer sends the Back+Next chord', () => {
   ])
 })
 
+test('press/release u_key sends the unoffset u<N> path', () => {
+  const sent: Array<[string, number]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.press_u_key as any).callback(fakeAction({ key: 1 }), {})
+  ;(actions.release_u_key as any).callback(fakeAction({ key: 12 }), {})
+  assert.deepEqual(sent, [
+    ['/hog/hardware/u1', 1],
+    ['/hog/hardware/u12', 0],
+  ])
+})
+
 test('release_playback_item sends the item number to the right typed path', () => {
   const sent: Array<[string, number]> = []
   const actions = createActionDefinitions((path, value) => sent.push([path, value]))

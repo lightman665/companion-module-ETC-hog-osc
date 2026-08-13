@@ -371,3 +371,30 @@ Por confirmar se o mesmo acontece com cuelists, não só scenes.
 de `line1`+`line2` de forma fiável — nem sempre a quebra acontece num espaço previsível, e o
 próprio comportamento pode mudar em versões futuras do Hog OS. Vale a pena testar novamente
 após cada atualização da consola.
+
+---
+
+## 16. U-Keys — confirmado apenas o modo de pressão simples
+
+A consola tem **12 U-Keys** (teclas macro configuráveis pelo utilizador), cada uma com **4
+modos de interação** possíveis: pressão simples, duplo clique, Pig+U-key, e Open+U-key.
+
+**Confirmado por teste em 2026-08-13 (pressão simples, 4 teclas testadas):**
+
+```
+/hog/hardware/u<N>   0 = up, 1 = down
+```
+
+Corresponde exatamente ao que o manual da ETC documenta — **sem offset** (ao contrário das
+command keys, §5). `u1` é `u1`, não `u2`.
+
+**Por confirmar (não testado ainda):**
+- Se existe algum caminho de status/feedback (`/hog/status/u<N>/...`) quando a tecla é premida
+  fisicamente na consola — o manual não documenta nenhum.
+- Os outros 3 modos de interação (duplo clique, Pig+U-key, Open+U-key) — desconhece-se se
+  produzem o mesmo caminho `/hog/hardware/u<N>` ou algo distinto.
+
+**Como aplicar:** implementar ações de press/release para pressão simples usando o caminho
+confirmado acima. Não assumir comportamento para os outros 3 modos nem para feedback de status
+sem evidência de pacote — testar cada um antes de os implementar, seguindo a mesma regra de
+evidência do resto deste documento.
