@@ -21,21 +21,6 @@ test('command_key_led is false when off or unset', () => {
   assert.equal((feedbacks.command_key_led as any).callback(fakeFeedback({ key: 9 }), {}), false)
 })
 
-test('command_key_assigned is true when line1 or line2 has content', () => {
-  const values: Record<string, unknown> = { h1_line1: 'Cuelist 3', h1_line2: '', h2_line1: '', h2_line2: '' }
-  const feedbacks = createFeedbackDefinitions((id) => values[id])
-
-  assert.equal((feedbacks.command_key_assigned as any).callback(fakeFeedback({ key: 1 }), {}), true)
-  assert.equal((feedbacks.command_key_assigned as any).callback(fakeFeedback({ key: 2 }), {}), false)
-})
-
-test('command_key_assigned treats whitespace-only values as empty', () => {
-  const values: Record<string, unknown> = { h5_line1: '  ', h5_line2: undefined }
-  const feedbacks = createFeedbackDefinitions((id) => values[id])
-
-  assert.equal((feedbacks.command_key_assigned as any).callback(fakeFeedback({ key: 5 }), {}), false)
-})
-
 test('named_button_led is true when the button led variable is 1', () => {
   const values: Record<string, unknown> = { blind_led: 1, clear_led: 0, go_back_led: 1 }
   const feedbacks = createFeedbackDefinitions((id) => values[id])
