@@ -43,17 +43,6 @@ test('press/release hardware button also works for the new manual-sourced button
   ])
 })
 
-test('press/release hardware button works for the unverified "open" guess', () => {
-  const sent: Array<[string, number]> = []
-  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
-  ;(actions.press_hardware_button as any).callback(fakeAction({ button: 'open' }), {})
-  ;(actions.release_hardware_button as any).callback(fakeAction({ button: 'open' }), {})
-  assert.deepEqual(sent, [
-    ['/hog/hardware/open', 1],
-    ['/hog/hardware/open', 0],
-  ])
-})
-
 test('select_all_in_programmer sends the Back+Next chord', () => {
   const sent: Array<[string, number]> = []
   const actions = createActionDefinitions((path, value) => sent.push([path, value]))

@@ -398,3 +398,9 @@ command keys, §5). `u1` é `u1`, não `u2`.
 confirmado acima. Não assumir comportamento para os outros 3 modos nem para feedback de status
 sem evidência de pacote — testar cada um antes de os implementar, seguindo a mesma regra de
 evidência do resto deste documento.
+
+**Falsa pista testada e refutada (2026-08-13):** `/hog/hardware/open` foi tentado como o
+caminho da tecla modificadora "Open" (usada em combos como Pig+Open+U-key), por analogia com
+"pig" e por corresponder ao que o projeto separado `companion-module-highend-hog4` já usa no
+seu `HardwareKey`. Testado via Companion contra a consola real — **não fez nada**. Removido de
+`HARDWARE_BUTTON_CHOICES`. O caminho real da tecla Open (se existir) continua desconhecido.

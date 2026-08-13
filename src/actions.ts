@@ -11,14 +11,11 @@ export type SendOsc = (path: string, value: number) => void
  * refresh commands that turned out not to work (spec §9), so treat these
  * five as unconfirmed until tested.
  *
- * "open" is UNVERIFIED by us (2026-08-13) - no packet capture yet - but has
- * two independent points of support: (1) it follows the same naming pattern
- * as the confirmed "pig" path, both being hold-modifiers per ETC's
- * chap-magic_keys_combos.htm, and (2) the separate, established
- * bitfocus/companion-module-highend-hog4 project's src/setup.js already
- * lists 'open' in its HardwareKey choices, sending /hog/hardware/open -
- * a real precedent from a module used by other Hog operators, not our own
- * evidence. Still flagged unverified until tested against this console.
+ * "open" is deliberately NOT in this list: tested against the real console
+ * 2026-08-13 (pressed via Companion) and /hog/hardware/open did nothing -
+ * disproven despite matching the naming pattern of the confirmed "pig" path
+ * and matching what the separate companion-module-highend-hog4 project uses.
+ * See HOG_OSC_SPEC.md §16 for the note on this false lead.
  *
  * "all" is deliberately NOT in this list: the manual documents
  * /hog/hardware/all as a single path, but real testing showed the console's
@@ -36,7 +33,6 @@ const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'copy',
   'next',
   'back',
-  'open',
 ].map((id) => ({
   id,
   label: id,
