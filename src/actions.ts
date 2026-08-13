@@ -11,6 +11,12 @@ export type SendOsc = (path: string, value: number) => void
  * refresh commands that turned out not to work (spec §9), so treat these
  * five as unconfirmed until tested.
  *
+ * "open" is an unverified GUESS (2026-08-13), not sourced from the manual or
+ * any capture - it follows the same naming pattern as the confirmed "pig"
+ * path (both are hold-modifiers, per chap-magic_keys_combos.htm), but nobody
+ * has actually seen /hog/hardware/open on the wire yet. Remove or confirm
+ * once tested against the real console.
+ *
  * "all" is deliberately NOT in this list: the manual documents
  * /hog/hardware/all as a single path, but real testing showed the console's
  * "select all active in the programmer" is actually a Back+Next chord, not
@@ -27,6 +33,7 @@ const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'copy',
   'next',
   'back',
+  'open',
 ].map((id) => ({
   id,
   label: id,
