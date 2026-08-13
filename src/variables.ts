@@ -1,12 +1,13 @@
 import type { CompanionVariableDefinition } from '@companion-module/base'
 import { NAMED_BUTTONS, toVariableId } from './namedButtons.js'
 import { MASTER_ACTIONS_WITH_COLOR, MASTER_COUNT } from './masters.js'
+import { SYSTEM_PATH_VARIABLES } from './systemPaths.js'
 
 /**
  * One variable per command-key field, indexed by physical key (1..12, offset
  * already resolved — see commandKeys.ts), plus one per named front-panel
- * button, plus one per playback-master action. Encoder wheels and system
- * variables follow in a later PR.
+ * button, plus one per playback-master action, plus encoder wheels and
+ * fixed system paths. This covers all read-side variables from §13.
  */
 export function getVariableDefinitions(): Record<string, CompanionVariableDefinition> {
   const defs: Record<string, CompanionVariableDefinition> = {}
@@ -31,6 +32,14 @@ export function getVariableDefinitions(): Record<string, CompanionVariableDefini
     }
     defs[`master${master}_choose`] = { name: `Master ${master} — choose aceso` }
   }
+
+  for (let encoder = 1; encoder <= 5; encoder++) {
+    defs[`encoder${encoder}_label`] = { name: `Encoder ${encoder} — label` }
+    defs[`encoder${encoder}_value`] = { name: `Encoder ${encoder} — valor` }
+  }
+
+  defs[SYSTEM_PATH_VARIABLES['/hog/system/time']] = { name: 'Hora do sistema (heartbeat)' }
+  defs[SYSTEM_PATH_VARIABLES['/hog/status/commandline']] = { name: 'Linha de comando (eco em tempo real)' }
 
   return defs
 }
