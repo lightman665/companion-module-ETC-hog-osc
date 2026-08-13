@@ -4,6 +4,7 @@ export interface HogConfig {
   host: string
   sendPort: number
   listenPort: number
+  [key: string]: string | number
 }
 
 export const DEFAULT_CONFIG: HogConfig = {

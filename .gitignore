@@ -1,5 +1,7 @@
 node_modules/
 dist/
+pkg/
+*.tgz
 *.log
 .DS_Store
 .claude/

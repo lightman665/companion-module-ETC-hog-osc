@@ -1,15 +1,29 @@
-import { InstanceBase, InstanceStatus, runEntrypoint, type SomeCompanionConfigField } from '@companion-module/base'
-import dgram from 'node:dgram'
+import {
+  InstanceBase,
+  InstanceStatus,
+  type CompanionVariableValues,
+  type InstanceTypes,
+  type SharedUdpSocket,
+  type SomeCompanionConfigField,
+} from '@companion-module/base'
 import { DEFAULT_CONFIG, getConfigFields, type HogConfig } from './config.js'
 import { getVariableDefinitions } from './variables.js'
 import { decodeOscMessage } from './osc.js'
 import { parseCommandKeyPath } from './commandKeys.js'
 import { HogState } from './state.js'
 
-class HogOscInstance extends InstanceBase<HogConfig> {
+interface HogInstanceTypes extends InstanceTypes {
+  config: HogConfig
+  secrets: undefined
+  actions: Record<string, never>
+  feedbacks: Record<string, never>
+  variables: CompanionVariableValues
+}
+
+class HogOscInstance extends InstanceBase<HogInstanceTypes> {
   private config: HogConfig = DEFAULT_CONFIG
   private readonly state = new HogState()
-  private socket: dgram.Socket | undefined
+  private socket: SharedUdpSocket | undefined
 
   async init(config: HogConfig): Promise<void> {
     this.config = config
@@ -34,13 +48,12 @@ class HogOscInstance extends InstanceBase<HogConfig> {
   private startListening(): void {
     this.updateStatus(InstanceStatus.Connecting)
 
-    const socket = dgram.createSocket('udp4')
+    const socket = this.createSharedUdpSocket('udp4', (msg) => this.handleMessage(msg))
     socket.on('error', (err) => {
       this.log('error', `Erro no socket UDP: ${err.message}`)
       this.updateStatus(InstanceStatus.ConnectionFailure, err.message)
     })
-    socket.on('message', (msg) => this.handleMessage(msg))
-    socket.bind(this.config.listenPort, () => {
+    socket.bind(this.config.listenPort, undefined, () => {
       this.updateStatus(InstanceStatus.Ok)
     })
 
@@ -70,4 +83,4 @@ class HogOscInstance extends InstanceBase<HogConfig> {
   }
 }
 
-runEntrypoint(HogOscInstance, [])
+export default HogOscInstance

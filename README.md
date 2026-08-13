@@ -22,11 +22,22 @@ list and follow-up PRs.
 
 ## Development
 
+Targets `@companion-module/base` v2 (Companion 5.x).
+
 ```bash
 npm install
 npm run build
 npm test
 ```
+
+## Trying it in Companion
+
+```bash
+npm run package
+```
+
+This produces `etc-hog-osc-<version>.tgz`. In Companion, go to **Modules → Import
+module package**, and select that file.
 
 ## Reference
 

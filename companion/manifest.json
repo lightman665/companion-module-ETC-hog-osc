@@ -1,4 +1,5 @@
 {
+  "type": "connection",
   "id": "etc-hog-osc",
   "name": "ETC/High End Systems Hog OSC",
   "shortname": "hog-osc",
@@ -9,15 +10,14 @@
   "bugs": "https://github.com/lightman665/companion-module-ETC-hog-osc/issues",
   "maintainers": [
     {
-      "name": "lightman665",
-      "email": ""
+      "name": "lightman665"
     }
   ],
   "runtime": {
-    "type": "node18",
+    "type": "node26",
     "api": "nodejs-ipc",
     "apiVersion": "1.1.0",
-    "entrypoint": "dist/main.js"
+    "entrypoint": "main.js"
   },
   "manufacturer": "High End Systems",
   "products": ["Hog 4", "Hog OS"],
