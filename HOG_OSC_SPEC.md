@@ -465,3 +465,23 @@ futuro, com o mesmo aviso de "não verificado":
 /position, /colour, /beam, /effect, /time, /group, /fixture, /maingo, /mainhalt, /mainback,
 /mainchoose, /skipfwd, /skipback, /assert, /restore, /rate
 ```
+
+---
+
+## 18. Master Key press/release (Choose/Go/Pause/Back/Flash) — não verificado
+
+`HARDWARE_BUTTON_CHOICES` cobre teclas fixas, mas os masters de playback (§3.3) têm as suas
+próprias teclas físicas Choose/Go/Pause/Back/Flash por master (a Gig Hog tem 5 masters físicos;
+outras mesas Hog têm 10). Não havia nenhuma ação para as premir a partir do Companion - só as
+variáveis de status já existiam.
+
+Sourced de `bitfocus/companion-module-highend-hog4`'s `src/actions.js`, ação `masterKey`:
+
+```
+/hog/hardware/<tipo>/<M>    1 = down, 0 = up
+```
+
+onde `<tipo>` é `choose`, `go`, `pause`, `goback`, ou `flash` (mesmos nomes usados nos caminhos
+de status já confirmados em §3.3), e `<M>` é o número do master (0-based). Implementado como
+`press_master_key`/`release_master_key`. Mesmo aviso das outras entradas desta fonte: boa pista,
+não prova - por testar contra a consola real.

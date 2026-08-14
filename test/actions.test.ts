@@ -78,6 +78,17 @@ test('press/release u_key sends the unoffset u<N> path', () => {
   ])
 })
 
+test('press/release master_key sends the /hog/hardware/<key>/<master> path', () => {
+  const sent: Array<[string, number]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.press_master_key as any).callback(fakeAction({ key: 'go', master: 0 }), {})
+  ;(actions.release_master_key as any).callback(fakeAction({ key: 'pause', master: 4 }), {})
+  assert.deepEqual(sent, [
+    ['/hog/hardware/go/0', 1],
+    ['/hog/hardware/pause/4', 0],
+  ])
+})
+
 test('release_playback_item sends the item number to the right typed path', () => {
   const sent: Array<[string, number]> = []
   const actions = createActionDefinitions((path, value) => sent.push([path, value]))

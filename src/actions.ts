@@ -1,5 +1,6 @@
 import type { CompanionActionDefinitions, DropdownChoice } from '@companion-module/base'
 import { COMMAND_KEY_CHOICES, toWireKey } from './commandKeys.js'
+import { MASTER_COUNT } from './masters.js'
 
 export type SendOsc = (path: string, value: number) => void
 
@@ -128,6 +129,22 @@ const PLAYBACK_ITEM_CHOICES: DropdownChoice[] = [
 ]
 
 /**
+ * UNVERIFIED (2026-08-14), sourced from bitfocus/companion-module-highend-hog4's
+ * src/actions.js `masterKey` action: /hog/hardware/<type>/<master>, matching the
+ * same action names as the confirmed status paths (masters.ts's MASTER_ACTIONS).
+ * Same "good lead, not proof" caveat as the other highend-hog4-sourced ids.
+ */
+const MASTER_KEY_CHOICES: DropdownChoice[] = ['choose', 'go', 'pause', 'goback', 'flash'].map((id) => ({
+  id,
+  label: id,
+}))
+
+const MASTER_NUMBER_CHOICES: DropdownChoice[] = Array.from({ length: MASTER_COUNT }, (_, i) => ({
+  id: i,
+  label: `Master ${i}`,
+}))
+
+/**
  * Actions for the outgoing OSC paths confirmed in HOG_OSC_SPEC.md §4. Command
  * keys use toWireKey() to apply the same +1 offset as receiving does (§5).
  */
@@ -190,6 +207,26 @@ export function createActionDefinitions(send: SendOsc): CompanionActionDefinitio
       options: [{ id: 'key', type: 'dropdown', label: 'U-Key', choices: U_KEY_CHOICES, default: 1 }],
       callback: (action) => {
         send(`/hog/hardware/u${Number(action.options.key)}`, 0)
+      },
+    },
+    press_master_key: {
+      name: 'Master Key: Press',
+      options: [
+        { id: 'key', type: 'dropdown', label: 'Key', choices: MASTER_KEY_CHOICES, default: 'go' },
+        { id: 'master', type: 'dropdown', label: 'Master', choices: MASTER_NUMBER_CHOICES, default: 0 },
+      ],
+      callback: (action) => {
+        send(`/hog/hardware/${String(action.options.key)}/${Number(action.options.master)}`, 1)
+      },
+    },
+    release_master_key: {
+      name: 'Master Key: Release',
+      options: [
+        { id: 'key', type: 'dropdown', label: 'Key', choices: MASTER_KEY_CHOICES, default: 'go' },
+        { id: 'master', type: 'dropdown', label: 'Master', choices: MASTER_NUMBER_CHOICES, default: 0 },
+      ],
+      callback: (action) => {
+        send(`/hog/hardware/${String(action.options.key)}/${Number(action.options.master)}`, 0)
       },
     },
     release_playback_item: {
