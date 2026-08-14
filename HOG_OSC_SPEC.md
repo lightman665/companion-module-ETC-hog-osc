@@ -535,11 +535,26 @@ Nota: `/hog/hardware/fader/<M>` usa o mesmo padrão do `masterFader` do highend-
 agora com `M=0` confirmado como sendo especificamente o Grand Master, não um master de playback
 normal - por verificar se `fader/<M>` com M>0 funciona da mesma forma para os outros masters.
 
-## 21. Estrutura de bancos de masters — descrita pelo utilizador, NÃO verificada
+## 21. Estrutura de bancos de masters — confirmada visualmente no Hog PC, endereçamento OSC por confirmar
 
 Segundo o utilizador (2026-08-14): a consola organiza os masters físicos em **9 bancos
 (numerados 0-8)**, cada um com **10 masters físicos** (Fader + Back + Pause + Play/Go + Choose
 por master) - um total teórico de 90 masters endereçáveis. Isto é mais alto que os 36 já
-confirmados por captura de pacote em §3.3. O próprio utilizador disse **"sem certeza pois temos
-que verificar"** - não mudar `MASTER_COUNT` nem construir UI de bancos sem confirmar isto com
-uma captura real primeiro. A Gig Hog especificamente só mostra 5 masters físicos de cada vez.
+confirmados por captura de pacote em §3.3.
+
+**Confirmado visualmente (2026-08-14)** a partir de um vídeo do Hog PC (`Virtual Wing Window`,
+frames extraídos com `ffmpeg`): a janela mostra claramente "Master Segment N" com N=0 a 8 (9
+separadores), e cada segmento mostra 10 masters numerados continuamente:
+- Segment 0 → masters 1-10
+- Segment 2 → masters 21-30
+- Segment 5 → masters 51-60
+- Segment 8 → masters 81-90
+
+Confirma exatamente a estrutura 9×10=90 descrita pelo utilizador. **O que continua por
+verificar**: como isto mapeia para o índice `<M>` usado nos caminhos OSC já confirmados em §18
+(`/hog/hardware/go/master#` etc.) e em §3.3 - por exemplo, se o "Master 1" mostrado na UI
+corresponde a `master#=0` (índice 0-based, como os U-Keys) ou a `master#=1`, e se os 36 já
+confirmados por captura correspondem aos segmentos 0-3 (parcial) ou a outra distribuição. Não
+mudar `MASTER_COUNT` nem construir UI de bancos sem confirmar o índice exato com uma captura
+real. A Gig Hog especificamente só mostra 5 masters físicos de cada vez (vs. 10 no Hog PC/outras
+mesas), mas deve endereçar o mesmo espaço lógico de 90 masters via OSC.
