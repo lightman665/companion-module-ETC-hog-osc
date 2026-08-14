@@ -11,6 +11,7 @@ import { getVariableDefinitions } from './variables.js'
 import { decodeOscMessage } from './osc.js'
 import { parseCommandKeyPath } from './commandKeys.js'
 import { parseNamedButtonPath, toVariableId } from './namedButtons.js'
+import { parseMasterPath } from './masters.js'
 import { HogState } from './state.js'
 
 interface HogInstanceTypes extends InstanceTypes {
@@ -87,6 +88,15 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
     if (namedButton) {
       this.setVariableValues({
         [`${toVariableId(namedButton.button)}_${namedButton.field}`]: value,
+      })
+      return
+    }
+
+    const master = parseMasterPath(message.address)
+    if (master) {
+      const suffix = master.field === 'color' ? '_color' : ''
+      this.setVariableValues({
+        [`master${master.master}_${master.action}${suffix}`]: value,
       })
     }
   }
