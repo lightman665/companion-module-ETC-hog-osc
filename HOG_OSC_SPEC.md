@@ -508,6 +508,12 @@ funciona normalmente na consola e o eco correspondente chega bem a `/hog/status/
 (confirmado por captura Protokol) — só o caminho de ENVIO está errado, não a receção. Removido
 de `HARDWARE_BUTTON_CHOICES`. Lição: nem duas fontes concordantes substituem teste real.
 
+**`goto` — inconclusivo, não refutado (2026-08-14).** Testado via Companion e não fez nada, mas
+ao contrário do "open"/"slash", isto **não prova que o caminho OSC esteja errado** — a própria
+função "Goto" também não funciona premindo a tecla física na consola nesta versão do Hog OS
+(suspeita de bug da própria consola, não do módulo). Mantido em `HARDWARE_BUTTON_CHOICES` como
+está; por reconfirmar numa versão do Hog OS onde a função Goto esteja a funcionar.
+
 ## 19. Playback Go/Halt/Resume — confirmado pelo manual oficial (novo, não implementado ainda)
 
 Secção 22.4.1 do manual ("OSC Playback Mappings") confirma o mesmo padrão já usado por
