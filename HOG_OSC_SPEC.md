@@ -454,3 +454,14 @@ Esta fonte já tinha acertado em todos os outros ids já confirmados deste módu
 blind, highlight, clear, next, back, record, merge, copy) — mas também listava "open", que
 testámos e refutámos (§16). **Por isso: boa pista, não prova.** Cada uma destas 9 continua por
 testar contra a consola real antes de se considerar confirmada.
+
+**Cópia em massa do resto do `HardwareKey` (2026-08-14):** o resto da lista de
+`companion-module-highend-hog4` foi também copiado para `HARDWARE_BUTTON_CHOICES`, para uso
+futuro, com o mesmo aviso de "não verificado":
+
+```
+/hog/hardware/zero .. /hog/hardware/nine, /period, /at, /minus, /plus, /slash, /thru, /full,
+/backspace, /enter, /up, /down, /left, /right, /live, /scene, /cue, /fan, /intensity,
+/position, /colour, /beam, /effect, /time, /group, /fixture, /maingo, /mainhalt, /mainback,
+/mainchoose, /skipfwd, /skipback, /assert, /restore, /rate
+```

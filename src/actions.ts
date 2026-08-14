@@ -20,6 +20,13 @@ export type SendOsc = (path: string, value: number) => void
  * tested and disproved (see below) - so this source is a good lead but not
  * proof; test each of these against the real console before trusting them.
  *
+ * The remaining ids below (zero..nine, period, at, minus, plus, slash, thru,
+ * full, backspace, enter, up, down, left, right, live, scene, cue, fan,
+ * intensity, position, colour, beam, effect, time, group, fixture, maingo,
+ * mainhalt, mainback, mainchoose, skipfwd, skipback, assert, restore, rate)
+ * were bulk-copied (2026-08-14) from the same highend-hog4 source for future
+ * use - also entirely UNVERIFIED, same caveat as above applies to all of them.
+ *
  * "open" is deliberately NOT in this list: tested against the real console
  * 2026-08-13 (pressed via Companion) and /hog/hardware/open did nothing -
  * disproven despite matching the naming pattern of the confirmed "pig" path
@@ -51,6 +58,50 @@ const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'setup',
   'goto',
   'set',
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'period',
+  'at',
+  'minus',
+  'plus',
+  'slash',
+  'thru',
+  'full',
+  'backspace',
+  'enter',
+  'up',
+  'down',
+  'left',
+  'right',
+  'live',
+  'scene',
+  'cue',
+  'fan',
+  'intensity',
+  'position',
+  'colour',
+  'beam',
+  'effect',
+  'time',
+  'group',
+  'fixture',
+  'maingo',
+  'mainhalt',
+  'mainback',
+  'mainchoose',
+  'skipfwd',
+  'skipback',
+  'assert',
+  'restore',
+  'rate',
 ].map((id) => ({
   id,
   label: id,
