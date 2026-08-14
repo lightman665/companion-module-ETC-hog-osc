@@ -19,14 +19,14 @@ export function getConfigFields(): SomeCompanionConfigField[] {
       type: 'static-text',
       id: 'info',
       width: 12,
-      label: 'Ligação',
+      label: 'Connection',
       value:
-        'A consola Hog envia de e recebe na mesma porta (ver HOG_OSC_SPEC.md §2). Só UDP é suportado — TCP não é viável (§7).',
+        'The Hog console sends and receives on the same port (see HOG_OSC_SPEC.md §2). Only UDP is supported — TCP is not viable (§7).',
     },
     {
       type: 'textinput',
       id: 'host',
-      label: 'IP da consola',
+      label: 'Console IP',
       width: 6,
       default: DEFAULT_CONFIG.host,
       regex: Regex.IP,
@@ -34,7 +34,7 @@ export function getConfigFields(): SomeCompanionConfigField[] {
     {
       type: 'number',
       id: 'sendPort',
-      label: 'Porta da consola (envio/receção)',
+      label: 'Console port (send/receive)',
       width: 6,
       default: DEFAULT_CONFIG.sendPort,
       min: 1,
@@ -43,7 +43,7 @@ export function getConfigFields(): SomeCompanionConfigField[] {
     {
       type: 'number',
       id: 'listenPort',
-      label: 'Porta de escuta do Companion',
+      label: 'Companion listen port',
       width: 6,
       default: DEFAULT_CONFIG.listenPort,
       min: 1,

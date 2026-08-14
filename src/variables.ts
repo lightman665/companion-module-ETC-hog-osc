@@ -13,33 +13,33 @@ export function getVariableDefinitions(): Record<string, CompanionVariableDefini
   const defs: Record<string, CompanionVariableDefinition> = {}
 
   for (let key = 1; key <= 12; key++) {
-    defs[`h${key}_line1`] = { name: `Command key ${key} — nome do objeto` }
-    defs[`h${key}_line2`] = { name: `Command key ${key} — estado` }
-    defs[`h${key}_led`] = { name: `Command key ${key} — LED aceso` }
-    defs[`h${key}_color`] = { name: `Command key ${key} — cor do LED` }
+    defs[`h${key}_line1`] = { name: `Command key ${key} — object name` }
+    defs[`h${key}_line2`] = { name: `Command key ${key} — state` }
+    defs[`h${key}_led`] = { name: `Command key ${key} — LED on` }
+    defs[`h${key}_color`] = { name: `Command key ${key} — LED color` }
   }
 
   for (const button of NAMED_BUTTONS) {
     const id = toVariableId(button)
-    defs[`${id}_led`] = { name: `Botão "${button}" — LED aceso` }
-    defs[`${id}_color`] = { name: `Botão "${button}" — cor do LED` }
+    defs[`${id}_led`] = { name: `"${button}" button — LED on` }
+    defs[`${id}_color`] = { name: `"${button}" button — LED color` }
   }
 
   for (let master = 0; master < MASTER_COUNT; master++) {
     for (const action of MASTER_ACTIONS_WITH_COLOR) {
-      defs[`master${master}_${action}`] = { name: `Master ${master} — ${action} aceso` }
-      defs[`master${master}_${action}_color`] = { name: `Master ${master} — ${action} cor` }
+      defs[`master${master}_${action}`] = { name: `Master ${master} — ${action} on` }
+      defs[`master${master}_${action}_color`] = { name: `Master ${master} — ${action} color` }
     }
-    defs[`master${master}_choose`] = { name: `Master ${master} — choose aceso` }
+    defs[`master${master}_choose`] = { name: `Master ${master} — choose on` }
   }
 
   for (let encoder = 1; encoder <= 5; encoder++) {
     defs[`encoder${encoder}_label`] = { name: `Encoder ${encoder} — label` }
-    defs[`encoder${encoder}_value`] = { name: `Encoder ${encoder} — valor` }
+    defs[`encoder${encoder}_value`] = { name: `Encoder ${encoder} — value` }
   }
 
-  defs[SYSTEM_PATH_VARIABLES['/hog/system/time']] = { name: 'Hora do sistema (heartbeat)' }
-  defs[SYSTEM_PATH_VARIABLES['/hog/status/commandline']] = { name: 'Linha de comando (eco em tempo real)' }
+  defs[SYSTEM_PATH_VARIABLES['/hog/system/time']] = { name: 'System time (heartbeat)' }
+  defs[SYSTEM_PATH_VARIABLES['/hog/status/commandline']] = { name: 'Command line (real-time echo)' }
 
   return defs
 }
