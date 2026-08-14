@@ -501,6 +501,13 @@ efeito. Removido de `MASTER_KEY_CHOICES` - mesmo padrão do "open"/"slash" (duas
 concordantes, mas testado e refutado). `go`/`pause`/`goback`/`flash` continuam por testar, mesmo
 aviso.
 
+**Nota do utilizador (2026-08-14) sobre despriorizar mais testes aqui**: estas teclas de master
+(o conceito de Choose/Go/Pause/Back/Flash por master tal como documentado) existem na Hog 4 mas
+deixaram de existir da mesma forma nas gerações mais recentes da consola Hog - por isso não
+compensa insistir em testar exaustivamente `go`/`pause`/`goback`/`flash` nem o Grand Master
+Fader/Encoder Wheels (§20) para já. Mantidos no código para compatibilidade com quem ainda usa
+Hog 4, mas não são prioridade de teste continuado nesta sessão.
+
 O manual (secção 22.4.3 completa) também confirma exatamente os ids já copiados em massa de
 `HARDWARE_BUTTON_CHOICES` (§17): `ewheelbutton/#`, `iwheelup`, `iwheeldown`, `pig`, `period`,
 `up`/`down`/`left`/`right`, `at`/`minus`/`plus`, `backspace`, `h#` (function/command keys),
