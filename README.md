@@ -53,10 +53,16 @@ included:
 
 | File | Page # | Contents |
 |---|---|---|
-| `commands-page.companionconfig` | 1, 2 | Command Keys 1-12 + FUNC, and Pig/Release/Blind/Clear/Highlight |
+| `command-keys-page.companionconfig` | 1 | Command Keys 1-12 + FUNC |
+| `hardware-buttons-page.companionconfig` | 2 | Pig/Release/Blind/Clear/Highlight |
 | `u-keys-page.companionconfig` | 3 | U1-U12 (single press) |
 | `programming-keys-page.companionconfig` | 4 | Delete/Move/Copy/Back/Clear/Update/Merge/Record/All/Blind/Pig/Next/Hilite |
 | `navigation-page.companionconfig` | 5 | Backspace, +/-/Full/@, Thru/Set, cursor diamond (arrows), Enter, Pig |
+| `all-pages.companionconfig` | 1-5 | All five pages above, combined into one import |
+
+Each of the first five files holds exactly one page, so you can import only
+the ones you want, in any order. `all-pages.companionconfig` is the same five
+pages bundled together, for importing everything in one go.
 
 To import one:
 
@@ -76,8 +82,8 @@ duplicate the button closest to what you need, and adjust its key number,
 text, or action - much faster than building a styled button from scratch.
 
 **Careful with page numbers**: each file targets a specific page number (see
-the table above - they're pre-assigned so the four files don't collide with
-each other when imported in order). Companion matches an imported page to
+the table above - they're pre-assigned so the individual files don't collide
+with each other when imported in order). Companion matches an imported page to
 your destination by that page **number**, not by name or content - so
 importing *any* file (the same one again, to pick up a fix, or even a
 different one) at a page number you're already using **overwrites whatever
@@ -94,7 +100,7 @@ page.
 ### Why no Presets tab yet
 
 This module's source includes a full set of Presets (`src/presets.ts`) matching
-the Commands page above, but they're **not enabled** for now. Companion's page
+the template pages above, but they're **not enabled** for now. Companion's page
 import already fully supports layered buttons with feedbacks (confirmed by
 testing), but dragging a preset from the **Presets tab** onto a button only
 brings its style and press/release actions - the LED feedback does **not** come
