@@ -1,16 +1,4 @@
-import {
-  InstanceBase,
-  InstanceStatus,
-  type CompanionActionSchemaWithoutResult,
-  type CompanionActionSchemaWithResult,
-  type CompanionFeedbackSchema,
-  type CompanionOptionValues,
-  type CompanionVariableValues,
-  type InstanceTypes,
-  type JsonValue,
-  type SharedUdpSocket,
-  type SomeCompanionConfigField,
-} from '@companion-module/base'
+import { InstanceBase, InstanceStatus, type SharedUdpSocket, type SomeCompanionConfigField } from '@companion-module/base'
 import { DEFAULT_CONFIG, getConfigFields, type HogConfig } from './config.js'
 import { getVariableDefinitions } from './variables.js'
 import { decodeOscMessage } from './osc.js'
@@ -21,18 +9,9 @@ import { parseEncoderPath } from './encoders.js'
 import { SYSTEM_PATH_VARIABLES } from './systemPaths.js'
 import { createActionDefinitions } from './actions.js'
 import { createFeedbackDefinitions } from './feedbacks.js'
+import { getPresetDefinitions, getPresetStructure } from './presets.js'
 import { HogState } from './state.js'
-
-interface HogInstanceTypes extends InstanceTypes {
-  config: HogConfig
-  secrets: undefined
-  actions: Record<
-    string,
-    CompanionActionSchemaWithoutResult<CompanionOptionValues> | CompanionActionSchemaWithResult<CompanionOptionValues, JsonValue>
-  >
-  feedbacks: Record<string, CompanionFeedbackSchema<CompanionOptionValues>>
-  variables: CompanionVariableValues
-}
+import type { HogInstanceTypes } from './instanceTypes.js'
 
 class HogOscInstance extends InstanceBase<HogInstanceTypes> {
   private config: HogConfig = DEFAULT_CONFIG
@@ -44,6 +23,7 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
     this.setVariableDefinitions(getVariableDefinitions())
     this.setActionDefinitions(createActionDefinitions((path, value) => this.sendToConsole(path, value)))
     this.setFeedbackDefinitions(createFeedbackDefinitions((variableId) => this.getVariableValue(variableId)))
+    this.setPresetDefinitions(getPresetStructure(), getPresetDefinitions())
     this.startListening()
   }
 
@@ -66,7 +46,7 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
 
     const socket = this.createSharedUdpSocket('udp4', (msg) => this.handleMessage(msg))
     socket.on('error', (err) => {
-      this.log('error', `Erro no socket UDP: ${err.message}`)
+      this.log('error', `UDP socket error: ${err.message}`)
       this.updateStatus(InstanceStatus.ConnectionFailure, err.message)
     })
     socket.bind(this.config.listenPort, undefined, () => {

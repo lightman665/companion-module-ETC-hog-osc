@@ -44,6 +44,34 @@ module package**, and select that file.
 All OSC paths and console quirks are documented, with evidence, in
 [HOG_OSC_SPEC.md](./HOG_OSC_SPEC.md).
 
+## Known limitation: presets don't bring their LED feedback
+
+Dragging a **Command Key** preset (or Blind/Clear/Highlight) onto a button correctly
+sets up the style and the press/release actions, but the LED feedback does **not**
+come with it - this is a limitation of Companion itself (as of v5.0.3): drag-and-drop
+does not currently carry feedbacks from `layered`-type presets onto the button. This
+has been confirmed by hand-building the same button without a preset, where adding
+the feedback manually works correctly - so the feedback definition itself is fine,
+only the automatic preset-to-button copy is affected.
+
+Until this is fixed upstream in Companion, add the feedback by hand once per button:
+
+1. Drag the preset onto a button as usual.
+2. Open that button, go to the **Feedbacks** tab, click **+ Add feedback**.
+3. For a Command Key preset: search for **"Command Key LED on"**, and set its
+   "Command key" option to the same number as the preset (e.g. key 5 for
+   "Command Key 5"). Then, in the feedback's **Style Overrides**, set:
+   - `dot` → opacity → `100`
+   - `dot` → color → green (`0, 255, 0`)
+   - `line2bg` → color → `2105376`
+4. For Blind/Clear/Highlight: search for **"Named Button LED on"**, set "Button" to
+   the matching name, then set the `bg` color override (Blind = blue `0,0,255`,
+   Clear = red `255,0,0`, Highlight = white `255,255,255`) and, for Blind/Clear
+   only, the `main` text color override to white (`255,255,255`).
+
+FUNC, Pig, and Release presets have no feedback and are unaffected by this - they
+work fully as dragged.
+
 ## Tip: switching Companion pages from a PC keyboard shortcut
 
 If you're running Companion on the same machine you're operating from, you can
