@@ -37,6 +37,13 @@ export type SendOsc = (path: string, value: number) => void
  * /hog/hardware/all as a single path, but real testing showed the console's
  * "select all active in the programmer" is actually a Back+Next chord, not
  * a dedicated key - see select_all_in_programmer below.
+ *
+ * "slash" is deliberately NOT in this list: tested against the real console
+ * 2026-08-14 (pressed via Companion) and /hog/hardware/slash did nothing,
+ * despite being confirmed by BOTH the official manual (§22.4.3) and
+ * highend-hog4. Confirmed via Protokol that the physical "/" key DOES work
+ * and echoes correctly to /hog/status/commandline - only the Companion-side
+ * send path is wrong. See HOG_OSC_SPEC.md §17 for the note.
  */
 const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'pig',
@@ -72,7 +79,6 @@ const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'at',
   'minus',
   'plus',
-  'slash',
   'thru',
   'full',
   'backspace',

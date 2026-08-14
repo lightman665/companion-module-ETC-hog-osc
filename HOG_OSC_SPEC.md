@@ -497,9 +497,16 @@ refresh que não funcionavam, §9) - por confirmar antes de assumir 100%.
 
 O manual (secção 22.4.3 completa) também confirma exatamente os ids já copiados em massa de
 `HARDWARE_BUTTON_CHOICES` (§17): `ewheelbutton/#`, `iwheelup`, `iwheeldown`, `pig`, `period`,
-`up`/`down`/`left`/`right`, `at`/`minus`/`plus`/`slash`, `backspace`, `h#` (function/command
-keys), `maingo`/`mainhalt`/`mainback`/`mainchoose`, `skipfwd`/`skipback`, `zero`..`nine` - agora
-com a mesma dupla confirmação.
+`up`/`down`/`left`/`right`, `at`/`minus`/`plus`, `backspace`, `h#` (function/command keys),
+`maingo`/`mainhalt`/`mainback`/`mainchoose`, `skipfwd`/`skipback`, `zero`..`nine` - agora com a
+mesma dupla confirmação.
+
+**Falsa pista testada e refutada (2026-08-14): `/hog/hardware/slash`.** Apesar de confirmado
+por DUAS fontes independentes (manual §22.4.3 e highend-hog4), testado via Companion contra a
+consola real e **não fez nada** — mesmo padrão do "open" (§16). Importante: a tecla física "/"
+funciona normalmente na consola e o eco correspondente chega bem a `/hog/status/commandline`
+(confirmado por captura Protokol) — só o caminho de ENVIO está errado, não a receção. Removido
+de `HARDWARE_BUTTON_CHOICES`. Lição: nem duas fontes concordantes substituem teste real.
 
 ## 19. Playback Go/Halt/Resume — confirmado pelo manual oficial (novo, não implementado ainda)
 
