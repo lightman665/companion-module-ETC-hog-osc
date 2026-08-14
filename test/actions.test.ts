@@ -95,3 +95,30 @@ test('release_playback_item sends the item number to the right typed path', () =
   ;(actions.release_playback_item as any).callback(fakeAction({ itemType: 1, number: 7 }), {})
   assert.deepEqual(sent, [['/hog/playback/release/1', 7]])
 })
+
+test('go/halt/resume_playback_item send the item number to the right typed path', () => {
+  const sent: Array<[string, number]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.go_playback_item as any).callback(fakeAction({ itemType: 0, number: 3 }), {})
+  ;(actions.halt_playback_item as any).callback(fakeAction({ itemType: 0, number: 3 }), {})
+  ;(actions.resume_playback_item as any).callback(fakeAction({ itemType: 0, number: 3 }), {})
+  assert.deepEqual(sent, [
+    ['/hog/playback/go/0', 3],
+    ['/hog/playback/halt/0', 3],
+    ['/hog/playback/resume/0', 3],
+  ])
+})
+
+test('set_grand_master_fader sends the level to /hog/hardware/fader/0', () => {
+  const sent: Array<[string, number]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.set_grand_master_fader as any).callback(fakeAction({ level: 128 }), {})
+  assert.deepEqual(sent, [['/hog/hardware/fader/0', 128]])
+})
+
+test('set_encoder_wheel sends the value to /hog/hardware/encoderwheel/<N>', () => {
+  const sent: Array<[string, number]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.set_encoder_wheel as any).callback(fakeAction({ wheel: 3, value: -10 }), {})
+  assert.deepEqual(sent, [['/hog/hardware/encoderwheel/3', -10]])
+})

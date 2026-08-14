@@ -468,20 +468,78 @@ futuro, com o mesmo aviso de "não verificado":
 
 ---
 
-## 18. Master Key press/release (Choose/Go/Pause/Back/Flash) — não verificado
+## 18. Master Key press/release (Choose/Go/Pause/Back/Flash) — confirmado pelo manual oficial
 
 `HARDWARE_BUTTON_CHOICES` cobre teclas fixas, mas os masters de playback (§3.3) têm as suas
 próprias teclas físicas Choose/Go/Pause/Back/Flash por master (a Gig Hog tem 5 masters físicos;
-outras mesas Hog têm 10). Não havia nenhuma ação para as premir a partir do Companion - só as
-variáveis de status já existiam.
+outras mesas Hog têm 10 por banco - ver §21). Não havia nenhuma ação para as premir a partir do
+Companion - só as variáveis de status já existiam.
 
-Sourced de `bitfocus/companion-module-highend-hog4`'s `src/actions.js`, ação `masterKey`:
+Inicialmente sourced de `bitfocus/companion-module-highend-hog4`'s `src/actions.js` (ação
+`masterKey`), e **desde 2026-08-14 confirmado também pelo manual oficial da ETC**
+(`sect-osc_mappings.htm`, secção 22.4.3 "OSC Button Mappings"):
 
 ```
-/hog/hardware/<tipo>/<M>    1 = down, 0 = up
+/hog/hardware/choose/master#
+/hog/hardware/go/master#
+/hog/hardware/pause/master#
+/hog/hardware/goback/master#      (tecla "Back")
+/hog/hardware/flash/master#
 ```
 
-onde `<tipo>` é `choose`, `go`, `pause`, `goback`, ou `flash` (mesmos nomes usados nos caminhos
-de status já confirmados em §3.3), e `<M>` é o número do master (0-based). Implementado como
-`press_master_key`/`release_master_key`. Mesmo aviso das outras entradas desta fonte: boa pista,
-não prova - por testar contra a consola real.
+Valor: 1 = tecla premida, 0 = tecla largada. Nomes coincidem exatamente com os já confirmados
+por captura de pacote em §3.3. Implementado como `press_master_key`/`release_master_key`. Duas
+fontes independentes concordam agora, mas mantemos o aviso habitual: nem o manual nem o
+highend-hog4 substituem teste real contra a consola (o próprio manual já documentou comandos de
+refresh que não funcionavam, §9) - por confirmar antes de assumir 100%.
+
+O manual (secção 22.4.3 completa) também confirma exatamente os ids já copiados em massa de
+`HARDWARE_BUTTON_CHOICES` (§17): `ewheelbutton/#`, `iwheelup`, `iwheeldown`, `pig`, `period`,
+`up`/`down`/`left`/`right`, `at`/`minus`/`plus`/`slash`, `backspace`, `h#` (function/command
+keys), `maingo`/`mainhalt`/`mainback`/`mainchoose`, `skipfwd`/`skipback`, `zero`..`nine` - agora
+com a mesma dupla confirmação.
+
+## 19. Playback Go/Halt/Resume — confirmado pelo manual oficial (novo, não implementado ainda)
+
+Secção 22.4.1 do manual ("OSC Playback Mappings") confirma o mesmo padrão já usado por
+`release_playback_item`, mas revela três ações em falta no módulo:
+
+```
+/hog/playback/go/<type>       valor = <número>            (ou <número>.<cue#> para ir a uma cue específica dentro de um cuelist)
+/hog/playback/halt/<type>     valor = <número>
+/hog/playback/resume/<type>   valor = <número>
+/hog/playback/release/<type>  valor = <número>             (já confirmado e implementado)
+```
+
+`<type>`: 0=Cuelist, 1=Scene, 2=Macro (mesmos valores de `PLAYBACK_ITEM_CHOICES`). O caminho é
+fixo por tipo de item; o número do cuelist/scene/macro vai no valor da mensagem OSC, não no
+caminho - exatamente como `release_playback_item` já faz. "Resume" só é documentado para
+cuelists no manual, mas a tabela lista o mesmo caminho genérico `/hog/playback/resume/<type>`
+para todos os tipos.
+
+## 20. Faders, Encoders, e Trackball — confirmado pelo manual oficial (novo, não implementado ainda)
+
+Secção 22.4.4 do manual ("OSC Fader and Encoder Mappings") - caminhos send-only (Companion →
+consola), valores contínuos em vez de 1/0:
+
+```
+/hog/hardware/posmode              0 = toggle off, 1 = toggle on (modo de posição do trackball)
+/hog/hardware/trackball             valores X,Y
+/hog/hardware/fader/0               0-255 (Grand Master Fader - master 0 é o Grand Master)
+/hog/hardware/encoderwheel/#        -20 a 20 (valor variável, main encoder wheels)
+/hog/hardware/ratewheel              -20 a 20 (valor variável)
+/hog/hardware/iwheel                  -20 a 20 (valor variável)
+```
+
+Nota: `/hog/hardware/fader/<M>` usa o mesmo padrão do `masterFader` do highend-hog4 (§18), mas
+agora com `M=0` confirmado como sendo especificamente o Grand Master, não um master de playback
+normal - por verificar se `fader/<M>` com M>0 funciona da mesma forma para os outros masters.
+
+## 21. Estrutura de bancos de masters — descrita pelo utilizador, NÃO verificada
+
+Segundo o utilizador (2026-08-14): a consola organiza os masters físicos em **9 bancos
+(numerados 0-8)**, cada um com **10 masters físicos** (Fader + Back + Pause + Play/Go + Choose
+por master) - um total teórico de 90 masters endereçáveis. Isto é mais alto que os 36 já
+confirmados por captura de pacote em §3.3. O próprio utilizador disse **"sem certeza pois temos
+que verificar"** - não mudar `MASTER_COUNT` nem construir UI de bancos sem confirmar isto com
+uma captura real primeiro. A Gig Hog especificamente só mostra 5 masters físicos de cada vez.

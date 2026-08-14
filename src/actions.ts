@@ -239,5 +239,57 @@ export function createActionDefinitions(send: SendOsc): CompanionActionDefinitio
         send(`/hog/playback/release/${Number(action.options.itemType)}`, Number(action.options.number))
       },
     },
+    go_playback_item: {
+      name: 'Go Cuelist/Scene/Macro by number',
+      description: 'Confirmed by the official ETC manual (HOG_OSC_SPEC.md §19), same path pattern as the already-verified release_playback_item.',
+      options: [
+        { id: 'itemType', type: 'dropdown', label: 'Type', choices: PLAYBACK_ITEM_CHOICES, default: 0 },
+        { id: 'number', type: 'number', label: 'Number', default: 1, min: 0, max: 9999 },
+      ],
+      callback: (action) => {
+        send(`/hog/playback/go/${Number(action.options.itemType)}`, Number(action.options.number))
+      },
+    },
+    halt_playback_item: {
+      name: 'Halt Cuelist/Scene/Macro by number',
+      description: 'Confirmed by the official ETC manual (HOG_OSC_SPEC.md §19), same path pattern as the already-verified release_playback_item.',
+      options: [
+        { id: 'itemType', type: 'dropdown', label: 'Type', choices: PLAYBACK_ITEM_CHOICES, default: 0 },
+        { id: 'number', type: 'number', label: 'Number', default: 1, min: 0, max: 9999 },
+      ],
+      callback: (action) => {
+        send(`/hog/playback/halt/${Number(action.options.itemType)}`, Number(action.options.number))
+      },
+    },
+    resume_playback_item: {
+      name: 'Resume Cuelist/Scene/Macro by number',
+      description: 'Confirmed by the official ETC manual (HOG_OSC_SPEC.md §19), same path pattern as the already-verified release_playback_item.',
+      options: [
+        { id: 'itemType', type: 'dropdown', label: 'Type', choices: PLAYBACK_ITEM_CHOICES, default: 0 },
+        { id: 'number', type: 'number', label: 'Number', default: 1, min: 0, max: 9999 },
+      ],
+      callback: (action) => {
+        send(`/hog/playback/resume/${Number(action.options.itemType)}`, Number(action.options.number))
+      },
+    },
+    set_grand_master_fader: {
+      name: 'Set Grand Master Fader Level',
+      description: 'Confirmed by the official ETC manual (HOG_OSC_SPEC.md §20): /hog/hardware/fader/0, 0-255. Untested against a real console.',
+      options: [{ id: 'level', type: 'number', label: 'Level (0-255)', default: 255, min: 0, max: 255 }],
+      callback: (action) => {
+        send('/hog/hardware/fader/0', Number(action.options.level))
+      },
+    },
+    set_encoder_wheel: {
+      name: 'Nudge Main Encoder Wheel',
+      description: 'Confirmed by the official ETC manual (HOG_OSC_SPEC.md §20): /hog/hardware/encoderwheel/<N>, -20 to 20. Untested against a real console.',
+      options: [
+        { id: 'wheel', type: 'number', label: 'Encoder wheel # (1-5)', default: 1, min: 1, max: 5 },
+        { id: 'value', type: 'number', label: 'Value (-20 to 20)', default: 1, min: -20, max: 20 },
+      ],
+      callback: (action) => {
+        send(`/hog/hardware/encoderwheel/${Number(action.options.wheel)}`, Number(action.options.value))
+      },
+    },
   }
 }
