@@ -404,3 +404,13 @@ caminho da tecla modificadora "Open" (usada em combos como Pig+Open+U-key), por 
 "pig" e por corresponder ao que o projeto separado `companion-module-highend-hog4` já usa no
 seu `HardwareKey`. Testado via Companion contra a consola real — **não fez nada**. Removido de
 `HARDWARE_BUTTON_CHOICES`. O caminho real da tecla Open (se existir) continua desconhecido.
+
+**A consola não ecoa a tecla física Open via OSC (confirmado 2026-08-14):** captura Protokol de
+~16s incluindo 3 pressões físicas da tecla Open na consola — **zero pacotes relacionados**. O
+único tráfego durante a janela foi ruído de fundo já conhecido (`system_time` a cada segundo,
+`led/flash/1` e `/5` a piscar, labels dos encoder wheels a aparecer/desaparecer). Isto está de
+acordo com o padrão já visto no resto deste documento: a consola só emite `/hog/status/...` para
+estados específicos que já tem definidos (LEDs, linhas de texto, flash, etc.), não um eco
+genérico de "esta tecla física foi premida". Não há, aparentemente, nenhum caminho de status
+para a tecla Open sozinha — **por isso não faz sentido continuar à procura de um caminho send-only
+alternativo para Open sem primeiro perceber se a consola alguma vez expõe isto via OSC.**
