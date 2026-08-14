@@ -136,8 +136,14 @@ const PLAYBACK_ITEM_CHOICES: DropdownChoice[] = [
  * src/actions.js `masterKey` action: /hog/hardware/<type>/<master>, matching the
  * same action names as the confirmed status paths (masters.ts's MASTER_ACTIONS).
  * Same "good lead, not proof" caveat as the other highend-hog4-sourced ids.
+ *
+ * "choose" is deliberately NOT in this list: tested against the real console
+ * 2026-08-14 (Master 1, via Companion) and did not select the master in any
+ * useful way, despite being confirmed by both the official manual (§22.4.3)
+ * and highend-hog4 - same pattern as "open" and "slash". See
+ * HOG_OSC_SPEC.md §18 for the note on this false lead.
  */
-const MASTER_KEY_CHOICES: DropdownChoice[] = ['choose', 'go', 'pause', 'goback', 'flash'].map((id) => ({
+const MASTER_KEY_CHOICES: DropdownChoice[] = ['go', 'pause', 'goback', 'flash'].map((id) => ({
   id,
   label: id,
 }))

@@ -490,10 +490,16 @@ Inicialmente sourced de `bitfocus/companion-module-highend-hog4`'s `src/actions.
 ```
 
 Valor: 1 = tecla premida, 0 = tecla largada. Nomes coincidem exatamente com os já confirmados
-por captura de pacote em §3.3. Implementado como `press_master_key`/`release_master_key`. Duas
-fontes independentes concordam agora, mas mantemos o aviso habitual: nem o manual nem o
-highend-hog4 substituem teste real contra a consola (o próprio manual já documentou comandos de
-refresh que não funcionavam, §9) - por confirmar antes de assumir 100%.
+por captura de pacote em §3.3. Implementado como `press_master_key`/`release_master_key`.
+
+**Testado em 2026-08-14, resultado NEGATIVO**: `choose` premido via Companion no Master 1 -
+**não funciona** (não seleciona o master de forma útil). Uma captura Protokol da mesma janela
+mostrou mudanças nos encoder wheels e no LED do choose, mas o utilizador confirmou que essas
+mudanças não foram causadas pelo nosso botão (coincidência/estado pré-existente) - lição:
+correlacionar timestamps de um log com uma ação não é prova sem confirmação direta de causa e
+efeito. Removido de `MASTER_KEY_CHOICES` - mesmo padrão do "open"/"slash" (duas fontes
+concordantes, mas testado e refutado). `go`/`pause`/`goback`/`flash` continuam por testar, mesmo
+aviso.
 
 O manual (secção 22.4.3 completa) também confirma exatamente os ids já copiados em massa de
 `HARDWARE_BUTTON_CHOICES` (§17): `ewheelbutton/#`, `iwheelup`, `iwheeldown`, `pig`, `period`,
@@ -531,6 +537,14 @@ fixo por tipo de item; o número do cuelist/scene/macro vai no valor da mensagem
 caminho - exatamente como `release_playback_item` já faz. "Resume" só é documentado para
 cuelists no manual, mas a tabela lista o mesmo caminho genérico `/hog/playback/resume/<type>`
 para todos os tipos.
+
+**Testado em 2026-08-14, resultado NEGATIVO**: `go_playback_item`/`halt_playback_item`/
+`resume_playback_item` testados via Companion (Cuelist 1) - nenhum funcionou. Ao contrário de
+`release_playback_item` (já confirmado a funcionar), estes três não produziram efeito nenhum.
+Mantidos no código (não removidos) por decisão do utilizador - podem passar a funcionar numa
+versão futura do Hog OS, ou pode haver um pré-requisito não documentado (ex: o item já ter sido
+"escolhido"/chosen antes - o que por si também não está confirmado a funcionar, ver §18). Por
+reconfirmar quando houver mais informação da ETC.
 
 ## 20. Faders, Encoders, e Trackball — confirmado pelo manual oficial (novo, não implementado ainda)
 
