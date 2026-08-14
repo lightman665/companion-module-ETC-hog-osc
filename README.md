@@ -63,18 +63,38 @@ hotkey tool (e.g. [AutoHotkey](https://www.autohotkey.com/) on Windows).
    SURFACE <surface id> PAGE-DOWN
    ```
 4. Bind a global hotkey to open a TCP connection and send one of the above.
-   Example AutoHotkey v2 script (previous/next page on Ctrl+Alt+Z / Ctrl+Alt+X):
+   Example AutoHotkey v2 script (previous/next page on Ctrl+Alt+Z / Ctrl+Alt+X),
+   using a raw Winsock call so each keypress doesn't spawn a subprocess:
 
    ```ahk
+   COMPANION_HOST := "127.0.0.1"
+   COMPANION_PORT := 16759
+   SURFACE_ID := "streamdeck:A1B2C3D4E5"  ; replace with your surface id
+
+   ; Minimal raw TCP send using Winsock (ws2_32.dll, built into Windows).
+   SendTCP(host, port, text) {
+       wsaData := Buffer(408, 0)
+       DllCall("ws2_32\WSAStartup", "UShort", 0x0202, "Ptr", wsaData)
+
+       sock := DllCall("ws2_32\socket", "Int", 2, "Int", 1, "Int", 6, "Ptr")
+
+       sockaddr := Buffer(16, 0)
+       NumPut("UShort", 2, sockaddr, 0)
+       NumPut("UShort", DllCall("ws2_32\htons", "UShort", port, "UShort"), sockaddr, 2)
+       NumPut("UInt", DllCall("ws2_32\inet_addr", "AStr", host, "UInt"), sockaddr, 4)
+
+       if (DllCall("ws2_32\connect", "Ptr", sock, "Ptr", sockaddr, "Int", 16, "Int") = 0) {
+           bytes := Buffer(StrPut(text, "CP0"))
+           len := StrPut(text, bytes, "CP0") - 1
+           DllCall("ws2_32\send", "Ptr", sock, "Ptr", bytes, "Int", len, "Int", 0, "Int")
+       }
+       DllCall("ws2_32\closesocket", "Ptr", sock)
+       DllCall("ws2_32\WSACleanup")
+   }
+
    SendPageCmd(direction) {
-       surfaceId := "streamdeck:A1B2C3D4E5"  ; replace with your surface id
-       cmd := "SURFACE " . surfaceId . " " . direction . "`n"
-       psCmd := "$c=New-Object System.Net.Sockets.TcpClient('127.0.0.1',16759);"
-           . "$s=$c.GetStream();"
-           . "$d=[System.Text.Encoding]::ASCII.GetBytes('" . cmd . "');"
-           . "$s.Write($d,0,$d.Length);"
-           . "$s.Close();$c.Close()"
-       RunWait('powershell -NoProfile -WindowStyle Hidden -Command "' . psCmd . '"', , "Hide")
+       global COMPANION_HOST, COMPANION_PORT, SURFACE_ID
+       SendTCP(COMPANION_HOST, COMPANION_PORT, "SURFACE " . SURFACE_ID . " " . direction . "`n")
    }
 
    ^!z::SendPageCmd("PAGE-DOWN")  ; Ctrl+Alt+Z -> previous page
@@ -90,6 +110,7 @@ hotkey tool (e.g. [AutoHotkey](https://www.autohotkey.com/) on Windows).
 - `Ctrl+Alt+F1`-style function-key combos can conflict with unrelated
   Windows/driver-level window shortcuts (observed: changed the active
   window's icon view size) — letter keys tend to be safer.
-- Each hotkey press spawns a short-lived PowerShell process to open the TCP
-  socket, so there's a small (sub-second) delay - acceptable for manual page
-  switching, but not for anything latency-sensitive.
+- The Winsock version above sends the TCP packet directly with no subprocess,
+  so it's near-instant. An earlier version of this tip used PowerShell's
+  `System.Net.Sockets.TcpClient` instead, which also works but has a
+  noticeable (sub-second) per-press delay from spawning a new process.
