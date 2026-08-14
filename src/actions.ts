@@ -7,13 +7,9 @@ export type SendOsc = (path: string, value: number) => void
 /**
  * pig/release/blind/highlight/clear are confirmed in HOG_OSC_SPEC.md §4.
  *
- * record/merge/copy (originally from the official ETC Hog Operations Manual
- * §22.4.2) and delete/move/update (originally bulk-copied from highend-hog4)
- * are now CONFIRMED by real console testing 2026-08-14.
- *
- * next/back are also from the manual §22.4.2, still unverified directly
- * (though implicitly exercised via the confirmed select_all_in_programmer
- * chord below).
+ * record/merge/copy/next/back (originally from the official ETC Hog
+ * Operations Manual §22.4.2) and delete/move/update (originally bulk-copied
+ * from highend-hog4) are now CONFIRMED by real console testing 2026-08-14.
  *
  * macro/list/page/setup/goto/set are still UNVERIFIED (2026-08-14), added
  * from the separate, established bitfocus/companion-module-highend-hog4
