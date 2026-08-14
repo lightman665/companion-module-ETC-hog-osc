@@ -309,6 +309,21 @@ usam o mesmo caminho de parsing simples que já lidam com atualizações individ
 deverá haver lógica especial em falta para eles - mas por confirmar com uma captura real de um
 relaunch completo antes de dar como definitivamente confirmado.
 
+**Confirmado por captura real de relaunch (2026-08-14):** a rajada completa observada usa
+exatamente os mesmos caminhos já tratados pelo módulo, sem nenhuma novidade:
+- Masters: `/hog/status/led/{choose,go,pause,goback,flash}/<M>` (e as variantes `color`),
+  observados de `M=26` até `M=0` nesta sessão (27 masters "em uso" - não é necessariamente o
+  limite máximo endereçável, só o que a consola tinha atribuído neste show).
+- Command keys: `/hog/status/led/h12` até `/hog/status/led/h1` (sem `line1`/`line2` nesta
+  captura em particular - provavelmente porque não havia nomes atribuídos nesta sessão de
+  teste).
+- Botões nomeados: `time`, `effects`, `beam`, `colour`, `position`, `intensity`, `blind`,
+  `clear`, `highlight`, `macro`, `ratedisabled`, `thruster upper`, `mainhalt`, `mainback`,
+  `maingo`, `dbo` - todos já cobertos por `NAMED_BUTTONS` em `namedButtons.ts`.
+
+Nenhum caminho novo ou inesperado apareceu. O parsing existente (sem lógica especial adicional
+para masters/botões nomeados) já lida corretamente com o dump completo.
+
 ---
 
 ## 13. Requisitos do módulo
