@@ -265,6 +265,23 @@ a tecla 12 deixa de corresponder a um `h<N>` fixo, daí o endereço `Invalid inp
 
 O módulo deve tolerar endereços malformados sem falhar.
 
+**Confirmado (2026-08-14):** a tecla 12 NUNCA funciona como slot de comando normal, em nenhuma
+geração de hardware da consola — é sempre dedicada à mudança de página. O texto que aparece em
+`h12_line1`/`h12_line2` (ex: `"CMD>>"` / `"1 of 2"`) não é um cuelist/scene atribuído nem dado
+desatualizado - é o **próprio rótulo fixo da função de mudança de página** (`"1 of 2"` indica
+quantas páginas de comandos existem). Isto explicou uma observação inicial após um relaunch que
+pareceu ser "dado antigo por limpar" - não era; é o valor correto e esperado para esta tecla.
+
+**Mas a própria função não está a funcionar neste momento (2026-08-14):** premir a tecla física
+12 diretamente na consola (sem passar pelo Companion) não muda de página de comandos. O rótulo
+mostra-se corretamente, mas a ação em si não tem efeito. Não relacionado com o módulo/Companion -
+testado diretamente na consola física.
+
+**Mas funciona no Hog PC (mesa virtual):** a mesma função de mudança de página de comandos
+funciona corretamente na aplicação Hog PC (software), ao contrário da consola física onde a
+tecla 12 não produz efeito. Sugere um problema específico do hardware físico desta consola (ou
+desta unidade em particular), não da lógica da consola em geral.
+
 **Tecla física "FUNC" (2026-08-14, captura Protokol):** produz exatamente o mesmo burst de
 refresh (h6 a h13, `line1`/`line2` a vazio) associado à mudança de página dos command keys
 acima. Não tem caminho OSC documentado em nenhuma das fontes conhecidas (manual oficial nem
