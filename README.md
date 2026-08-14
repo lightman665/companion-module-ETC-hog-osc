@@ -53,7 +53,7 @@ included:
 
 | File | Contents |
 |---|---|
-| `starter-page.companionconfig` | Command Keys 1-12 + FUNC, and Pig/Release/Blind/Clear/Highlight, on two pages |
+| `commands-page.companionconfig` | Command Keys 1-12 + FUNC, and Pig/Release/Blind/Clear/Highlight, on two pages |
 | `u-keys-page.companionconfig` | U1-U12 (single press) |
 | `programming-keys-page.companionconfig` | Delete/Move/Copy/Back/Clear/Update/Merge/Record/All/Blind/Pig/Next/Hilite |
 | `navigation-page.companionconfig` | Backspace, +/-/Full/@, Thru/Set, cursor diamond (arrows), Enter, Pig |
@@ -74,7 +74,7 @@ and across pages), exactly like any button you built by hand.
 ### Why no Presets tab yet
 
 This module's source includes a full set of Presets (`src/presets.ts`) matching
-the starter page above, but they're **not enabled** for now. Companion's page
+the Commands page above, but they're **not enabled** for now. Companion's page
 import already fully supports layered buttons with feedbacks (confirmed by
 testing), but dragging a preset from the **Presets tab** onto a button only
 brings its style and press/release actions - the LED feedback does **not** come

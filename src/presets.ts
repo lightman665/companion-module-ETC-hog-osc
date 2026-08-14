@@ -15,7 +15,7 @@ import { PIG_ICON_BASE64 } from './pigIcon.js'
  * finalised"). Shipping a preset that silently loses its LED feedback would
  * confuse users more than not having presets at all, so for now the
  * recommended way to get a fully working, fully styled set of buttons is
- * importing examples/starter-page.companionconfig as a page (see README) -
+ * importing examples/commands-page.companionconfig as a page (see README) -
  * page import already carries feedbacks correctly. Re-enable this (wire
  * getPresetDefinitions/getPresetStructure back into main.ts's init()) once
  * Companion ships working feedback support for layered presets.
