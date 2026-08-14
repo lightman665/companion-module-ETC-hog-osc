@@ -300,6 +300,15 @@ pacotes UDP — alguns indicadores não atualizam. Libertar um a um é 100 % fi�
 limitação do UDP, não da consola; o módulo pode mitigar reagindo a qualquer atualização
 posterior do mesmo caminho.
 
+**O dump de relaunch cobre TODO o estado da consola (2026-08-14), não só os command keys.**
+Ao relançar a sessão (logoff + relaunch), a rajada completa inclui masters de playback, botões
+nomeados, e não só `h1`-`h12`. O módulo já tem lógica dedicada para o caso especial dos command
+keys (dump sem offset vs. eventos individuais com offset +1, §5), testada em
+`test/commandKeys.test.ts`; os restantes tipos de variável (masters, botões nomeados, encoders)
+usam o mesmo caminho de parsing simples que já lidam com atualizações individuais, pelo que não
+deverá haver lógica especial em falta para eles - mas por confirmar com uma captura real de um
+relaunch completo antes de dar como definitivamente confirmado.
+
 ---
 
 ## 13. Requisitos do módulo
