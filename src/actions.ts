@@ -11,6 +11,15 @@ export type SendOsc = (path: string, value: number) => void
  * refresh commands that turned out not to work (spec §9), so treat these
  * five as unconfirmed until tested.
  *
+ * macro/list/page/delete/move/update/setup/goto/set are UNVERIFIED
+ * (2026-08-14), added from the separate, established
+ * bitfocus/companion-module-highend-hog4 project's src/setup.js
+ * (HardwareKey choices) - the same source that correctly matched every
+ * other already-confirmed id in this list (pig, release, blind, highlight,
+ * clear, next, back, record, merge, copy). It also listed "open", which we
+ * tested and disproved (see below) - so this source is a good lead but not
+ * proof; test each of these against the real console before trusting them.
+ *
  * "open" is deliberately NOT in this list: tested against the real console
  * 2026-08-13 (pressed via Companion) and /hog/hardware/open did nothing -
  * disproven despite matching the naming pattern of the confirmed "pig" path
@@ -33,6 +42,15 @@ const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'copy',
   'next',
   'back',
+  'macro',
+  'list',
+  'page',
+  'delete',
+  'move',
+  'update',
+  'setup',
+  'goto',
+  'set',
 ].map((id) => ({
   id,
   label: id,

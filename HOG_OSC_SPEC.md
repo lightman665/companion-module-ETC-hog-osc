@@ -429,3 +429,28 @@ largado. Isto é um sinal indireto mas real e reproduzível de "Open está premi
 como proxy caso seja preciso construir uma feedback para isto no futuro - mas não é um caminho
 `/hog/hardware/open` dedicado, e continua sem se saber se existe algum caminho send-only para
 simular a própria pressão de Open a partir do Companion.
+
+---
+
+## 17. Teclas de programação (macro/list/page/delete/move/update/setup/goto/set) — não verificadas
+
+Adicionadas a `HARDWARE_BUTTON_CHOICES` (2026-08-14) a partir do projeto separado
+`bitfocus/companion-module-highend-hog4`, cujo `src/setup.js` já lista estes ids exatos em
+`Choices.HardwareKey`:
+
+```
+/hog/hardware/macro
+/hog/hardware/list
+/hog/hardware/page
+/hog/hardware/delete
+/hog/hardware/move
+/hog/hardware/update
+/hog/hardware/setup
+/hog/hardware/goto
+/hog/hardware/set
+```
+
+Esta fonte já tinha acertado em todos os outros ids já confirmados deste módulo (pig, release,
+blind, highlight, clear, next, back, record, merge, copy) — mas também listava "open", que
+testámos e refutámos (§16). **Por isso: boa pista, não prova.** Cada uma destas 9 continua por
+testar contra a consola real antes de se considerar confirmada.
