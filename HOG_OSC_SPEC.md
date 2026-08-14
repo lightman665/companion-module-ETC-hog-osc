@@ -273,10 +273,10 @@ distinta, não testada ao nível OSC. `FUNC` sozinha ainda não tem um caminho `
 confirmado nem sequer palpitado - por investigar se algum dia for preciso enviá-la a partir do
 Companion.
 
-**Pig+FUNC muda mesmo de página visivelmente** nos command keys (confirmado pelo utilizador) -
-ao contrário de FUNC sozinha, que envia o mesmo burst OSC mas sem mudança visível equivalente
-na consola neste momento. Sugere que Pig+FUNC é a combinação funcionalmente correta/fiável para
-esta mudança de página, não FUNC isolada.
+**Por confirmar (2026-08-14, informação contraditória ainda a esclarecer):** não está claro se
+FUNC sozinha, Pig+FUNC, ou Open+FUNC é que realmente muda a página dos command keys de forma
+visível e persistente na consola - as primeiras impressões do utilizador variaram entre testes.
+Não assumir nenhuma combinação como confirmada até haver um teste direto e inequívoco.
 
 ---
 
