@@ -6,20 +6,23 @@ export type SendOsc = (path: string, value: number) => void
 
 /**
  * pig/release/blind/highlight/clear are confirmed in HOG_OSC_SPEC.md §4.
- * record/merge/copy/next/back are from the official ETC Hog Operations
- * Manual (§22.4.2) but NOT yet verified against a real console the way
- * everything else in this module is - the same manual already documented
- * refresh commands that turned out not to work (spec §9), so treat these
- * five as unconfirmed until tested.
  *
- * macro/list/page/delete/move/update/setup/goto/set are UNVERIFIED
- * (2026-08-14), added from the separate, established
- * bitfocus/companion-module-highend-hog4 project's src/setup.js
- * (HardwareKey choices) - the same source that correctly matched every
- * other already-confirmed id in this list (pig, release, blind, highlight,
- * clear, next, back, record, merge, copy). It also listed "open", which we
- * tested and disproved (see below) - so this source is a good lead but not
- * proof; test each of these against the real console before trusting them.
+ * record/merge/copy (originally from the official ETC Hog Operations Manual
+ * §22.4.2) and delete/move/update (originally bulk-copied from highend-hog4)
+ * are now CONFIRMED by real console testing 2026-08-14.
+ *
+ * next/back are also from the manual §22.4.2, still unverified directly
+ * (though implicitly exercised via the confirmed select_all_in_programmer
+ * chord below).
+ *
+ * macro/list/page/setup/goto/set are still UNVERIFIED (2026-08-14), added
+ * from the separate, established bitfocus/companion-module-highend-hog4
+ * project's src/setup.js (HardwareKey choices) - the same source that
+ * correctly matched every other already-confirmed id in this list (pig,
+ * release, blind, highlight, clear, record, merge, copy, delete, move,
+ * update). It also listed "open", which we tested and disproved (see
+ * below) - so this source is a good lead but not proof for the remaining
+ * untested ids; test each before fully trusting them.
  *
  * The remaining ids below (zero..nine, period, at, minus, plus, slash, thru,
  * full, backspace, enter, up, down, left, right, live, scene, cue, fan,

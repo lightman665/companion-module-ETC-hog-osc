@@ -374,30 +374,30 @@ após cada atualização da consola.
 
 ---
 
-## 16. U-Keys — confirmado apenas o modo de pressão simples
+## 16. U-Keys — confirmados os 4 modos de interação
 
 A consola tem **12 U-Keys** (teclas macro configuráveis pelo utilizador), cada uma com **4
 modos de interação** possíveis: pressão simples, duplo clique, Pig+U-key, e Open+U-key.
 
-**Confirmado por teste em 2026-08-13 (pressão simples, 4 teclas testadas):**
+**Confirmado por teste em 2026-08-13 (pressão simples) e 2026-08-14 (os outros 3 modos):**
 
 ```
 /hog/hardware/u<N>   0 = up, 1 = down
 ```
 
 Corresponde exatamente ao que o manual da ETC documenta — **sem offset** (ao contrário das
-command keys, §5). `u1` é `u1`, não `u2`.
+command keys, §5). `u1` é `u1`, não `u2`. **Os 4 modos de interação produzem exatamente o mesmo
+caminho** — duplo clique, Pig+U-key, e Open+U-key não têm nenhum sinal OSC distinto da pressão
+simples. A distinção entre modos acontece inteiramente no lado da consola (que função a tecla
+executa), não no protocolo OSC.
 
-**Por confirmar (não testado ainda):**
-- Se existe algum caminho de status/feedback (`/hog/status/u<N>/...`) quando a tecla é premida
-  fisicamente na consola — o manual não documenta nenhum.
-- Os outros 3 modos de interação (duplo clique, Pig+U-key, Open+U-key) — desconhece-se se
-  produzem o mesmo caminho `/hog/hardware/u<N>` ou algo distinto.
+**Ainda por confirmar**: se existe algum caminho de status/feedback (`/hog/status/u<N>/...`)
+quando a tecla é premida fisicamente na consola — o manual não documenta nenhum, e isto não foi
+testado.
 
-**Como aplicar:** implementar ações de press/release para pressão simples usando o caminho
-confirmado acima. Não assumir comportamento para os outros 3 modos nem para feedback de status
-sem evidência de pacote — testar cada um antes de os implementar, seguindo a mesma regra de
-evidência do resto deste documento.
+**Como aplicar:** `press_u_key`/`release_u_key` já implementam o caminho confirmado acima e
+cobrem os 4 modos automaticamente (não há necessidade de ações separadas por modo, já que o
+protocolo é idêntico).
 
 **Falsa pista testada e refutada (2026-08-13):** `/hog/hardware/open` foi tentado como o
 caminho da tecla modificadora "Open" (usada em combos como Pig+Open+U-key), por analogia com

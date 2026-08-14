@@ -4,7 +4,7 @@
   "name": "ETC/High End Systems Hog OSC",
   "shortname": "hog-osc",
   "description": "Native OSC integration for High End Systems Hog consoles (Hog OS 4/5). Replaces the generic-osc + triggers workaround with a proper per-path variable dictionary, per HOG_OSC_SPEC.md.",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "license": "MIT",
   "repository": "https://github.com/lightman665/companion-module-ETC-hog-osc",
   "bugs": "https://github.com/lightman665/companion-module-ETC-hog-osc/issues",
