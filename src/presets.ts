@@ -8,6 +8,18 @@ import type { HogInstanceTypes } from './instanceTypes.js'
 import { PIG_ICON_BASE64 } from './pigIcon.js'
 
 /**
+ * NOT currently wired into main.ts (2026-08-14). Confirmed via testing that
+ * Companion v5.0.3 drags a layered preset's style and actions onto a button
+ * correctly, but drops its feedbacks - a known incomplete feature upstream
+ * (bitfocus/companion#4280: "already mostly done, waiting until the api is
+ * finalised"). Shipping a preset that silently loses its LED feedback would
+ * confuse users more than not having presets at all, so for now the
+ * recommended way to get a fully working, fully styled set of buttons is
+ * importing examples/starter-page.companionconfig as a page (see README) -
+ * page import already carries feedbacks correctly. Re-enable this (wire
+ * getPresetDefinitions/getPresetStructure back into main.ts's init()) once
+ * Companion ships working feedback support for layered presets.
+ *
  * Reproduces the layout hand-built and confirmed in Companion during this
  * session: blue-grey text (the RECORD button's reference color, 4210943),
  * pushed down 10% so it never overlaps the top-right feedback dot, fontsize

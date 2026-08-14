@@ -9,7 +9,6 @@ import { parseEncoderPath } from './encoders.js'
 import { SYSTEM_PATH_VARIABLES } from './systemPaths.js'
 import { createActionDefinitions } from './actions.js'
 import { createFeedbackDefinitions } from './feedbacks.js'
-import { getPresetDefinitions, getPresetStructure } from './presets.js'
 import { HogState } from './state.js'
 import type { HogInstanceTypes } from './instanceTypes.js'
 
@@ -23,7 +22,6 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
     this.setVariableDefinitions(getVariableDefinitions())
     this.setActionDefinitions(createActionDefinitions((path, value) => this.sendToConsole(path, value)))
     this.setFeedbackDefinitions(createFeedbackDefinitions((variableId) => this.getVariableValue(variableId)))
-    this.setPresetDefinitions(getPresetStructure(), getPresetDefinitions())
     this.startListening()
   }
 

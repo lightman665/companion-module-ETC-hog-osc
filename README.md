@@ -44,33 +44,42 @@ module package**, and select that file.
 All OSC paths and console quirks are documented, with evidence, in
 [HOG_OSC_SPEC.md](./HOG_OSC_SPEC.md).
 
-## Known limitation: presets don't bring their LED feedback
+## Getting started: import the starter page
 
-Dragging a **Command Key** preset (or Blind/Clear/Highlight) onto a button correctly
-sets up the style and the press/release actions, but the LED feedback does **not**
-come with it - this is a limitation of Companion itself (as of v5.0.3): drag-and-drop
-does not currently carry feedbacks from `layered`-type presets onto the button. This
-has been confirmed by hand-building the same button without a preset, where adding
-the feedback manually works correctly - so the feedback definition itself is fine,
-only the automatic preset-to-button copy is affected.
+This module doesn't ship Companion Presets yet (see below for why) - instead,
+import [`examples/starter-page.companionconfig`](./examples/starter-page.companionconfig)
+directly as a page to get a fully working, fully styled set of buttons, LED
+feedback included:
 
-Until this is fixed upstream in Companion, add the feedback by hand once per button:
+1. In Companion, go to **Settings → Import/Export → Import**, and select
+   `examples/starter-page.companionconfig`.
+2. Companion will ask you to map the file's `hog-osc` connection reference to
+   your own connection instance - pick your existing one.
+3. Two pages are added: **Command Keys** (the 12 command keys + FUNC) and
+   **Hardware Buttons** (Pig, Release, Blind, Clear, Highlight) - fully styled,
+   with working LED feedback, no manual setup needed.
 
-1. Drag the preset onto a button as usual.
-2. Open that button, go to the **Feedbacks** tab, click **+ Add feedback**.
-3. For a Command Key preset: search for **"Command Key LED on"**, and set its
-   "Command key" option to the same number as the preset (e.g. key 5 for
-   "Command Key 5"). Then, in the feedback's **Style Overrides**, set:
-   - `dot` → opacity → `100`
-   - `dot` → color → green (`0, 255, 0`)
-   - `line2bg` → color → `2105376`
-4. For Blind/Clear/Highlight: search for **"Named Button LED on"**, set "Button" to
-   the matching name, then set the `bg` color override (Blind = blue `0,0,255`,
-   Clear = red `255,0,0`, Highlight = white `255,255,255`) and, for Blind/Clear
-   only, the `main` text color override to white (`255,255,255`).
+### Why no Presets tab yet
 
-FUNC, Pig, and Release presets have no feedback and are unaffected by this - they
-work fully as dragged.
+This module's source includes a full set of Presets (`src/presets.ts`) matching
+the starter page above, but they're **not enabled** for now. Companion's page
+import already fully supports layered buttons with feedbacks (confirmed by
+testing), but dragging a preset from the **Presets tab** onto a button only
+brings its style and press/release actions - the LED feedback does **not** come
+with it, confirmed by testing (including on a freshly emptied button, ruling out
+a merge conflict with prior config).
+
+This is a limitation of Companion itself, not of this module: `@companion-module/base`
+2.1.x added support for `layered`-type presets with feedback `styleOverrides`,
+but Companion's own preset-to-button drag handling hasn't caught up yet - the
+Companion team confirmed on GitHub (issue
+[bitfocus/companion#4280](https://github.com/bitfocus/companion/issues/4280))
+that this capability is *"already mostly done, it is just waiting until the api
+is finalised before being released."* As of Companion v5.0.3 (the latest release
+at the time of writing), presets correctly bring their style and actions, but not
+their feedbacks - and a preset that silently drops part of its setup would
+confuse more than it'd help, so the Presets tab stays disabled until Companion
+finishes this. It'll be re-enabled once that's fixed upstream.
 
 ## Tip: switching Companion pages from a PC keyboard shortcut
 
