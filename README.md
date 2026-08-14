@@ -45,7 +45,7 @@ module package**, and select that file.
 
 The module's send/listen port config must match what the Hog console is
 actually using. Confirmed by testing: setting the console's own OSC port to
-something other than 7000 (e.g. 7001) breaks command reception on the
+something other than 7000 (e.g. 7001) breaks OSC entirely, both directions, on the
 console's side - see `HOG_OSC_SPEC.md` §2. Keep the console on its default
 port 7000.
 
