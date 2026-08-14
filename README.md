@@ -56,6 +56,7 @@ included:
 | `starter-page.companionconfig` | Command Keys 1-12 + FUNC, and Pig/Release/Blind/Clear/Highlight, on two pages |
 | `u-keys-page.companionconfig` | U1-U12 (single press) |
 | `programming-keys-page.companionconfig` | Delete/Move/Copy/Back/Clear/Update/Merge/Record/All/Blind/Pig/Next/Hilite |
+| `navigation-page.companionconfig` | Backspace, +/-/Full/@, Thru/Set, cursor diamond (arrows), Enter, Pig |
 
 To import one:
 
