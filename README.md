@@ -41,7 +41,7 @@ module package**, and select that file.
 
 ## Troubleshooting
 
-### Console OSC not working at all? Avoid port 7001
+### AVOID port 7001 at all cost
 
 **Confirmed by testing: port 7001 doesn't work on the console, whether it's
 assigned to the In or the Out field.** The console's OSC settings has
@@ -54,10 +54,12 @@ directions), so if you're only using it, you shouldn't hit this. But it's
 worth checking on the console itself if you're combining this module with
 other OSC tooling and output "stops working."
 
-If the connection ends up in an error state (e.g. after experimenting with
-ports), the module doesn't always recover on its own once the config is
-corrected - manually **disable and re-enable** the connection (the toggle
-next to it on the Connections page) to force Companion to re-establish it.
+**It gets worse if the console's Out port was left on 7001 and you then fix
+it back to 7000 (or otherwise change any port after the fact):** the
+Companion connection doesn't recover on its own even once the ports agree
+again - it stays stuck in an error state. Manually **disable and re-enable**
+the connection (the toggle next to it on the Connections page) to force
+Companion to actually re-establish it.
 
 ## Reference
 
