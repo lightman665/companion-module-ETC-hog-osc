@@ -10,6 +10,7 @@ import { DEFAULT_CONFIG, getConfigFields, type HogConfig } from './config.js'
 import { getVariableDefinitions } from './variables.js'
 import { decodeOscMessage } from './osc.js'
 import { parseCommandKeyPath } from './commandKeys.js'
+import { parseNamedButtonPath, toVariableId } from './namedButtons.js'
 import { HogState } from './state.js'
 
 interface HogInstanceTypes extends InstanceTypes {
@@ -78,6 +79,14 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
     if (commandKey) {
       this.setVariableValues({
         [`h${commandKey.physicalKey}_${commandKey.field}`]: value,
+      })
+      return
+    }
+
+    const namedButton = parseNamedButtonPath(message.address)
+    if (namedButton) {
+      this.setVariableValues({
+        [`${toVariableId(namedButton.button)}_${namedButton.field}`]: value,
       })
     }
   }
