@@ -41,13 +41,18 @@ module package**, and select that file.
 
 ## Troubleshooting
 
-### Stick to port 7000 on the console
+### Console OSC not working at all? Avoid port 7001
 
-The module's send/listen port config must match what the Hog console is
-actually using. Confirmed by testing: setting the console's own OSC port to
-something other than 7000 (e.g. 7001) breaks OSC entirely, both directions, on the
-console's side - see `HOG_OSC_SPEC.md` §2. Keep the console on its default
-port 7000.
+**Confirmed by testing: port 7001 doesn't work on the console, whether it's
+assigned to the In or the Out field.** The console's OSC settings has
+separate In/Out port fields, defaulting to `In=7000` / `Out=7001` - so most
+consoles hit this bug out of the box, without anyone deliberately choosing
+7001. This is very likely the real cause behind the common "the console
+randomly stopped sending OSC" complaint - see `HOG_OSC_SPEC.md` §2. This
+module avoids the bug entirely by using port 7000 for everything (both
+directions), so if you're only using it, you shouldn't hit this. But it's
+worth checking on the console itself if you're combining this module with
+other OSC tooling and output "stops working."
 
 If the connection ends up in an error state (e.g. after experimenting with
 ports), the module doesn't always recover on its own once the config is

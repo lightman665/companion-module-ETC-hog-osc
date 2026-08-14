@@ -37,13 +37,23 @@ no race, immune to bursts.
 
 The console uses the **same port (7000)** to send state and receive commands.
 
-**Confirmed (2026-08-14): setting the console to a non-default port (7001)
-breaks OSC entirely, both directions.** With the console's own OSC port
-configured to 7001 instead of 7000, it neither receives/acts on incoming
-commands nor sends its status updates - suggests the console doesn't fully
-honor a non-default port setting on either the send or receive side, even
-though the setting itself is changeable. Stick to port 7000 on the console
-side until this is better understood.
+**Confirmed (2026-08-14): port 7001 itself doesn't work on the console,
+regardless of which field it's assigned to.** The console's OSC settings
+screen has separate In and Out port fields, defaulting to `In=7000` /
+`Out=7001`. Testing showed 7001 fails whether it's put in the In field or
+the Out field - it isn't that "Out" specifically is broken, it's that 7001
+specifically doesn't work on this console. Since 7001 is the *default* value
+of the Out field, most consoles will hit this out of the box without anyone
+having deliberately chosen it. This module sidesteps the bug entirely by
+using port 7000 for *everything* - both sending commands to the console and
+receiving its status (see table above).
+
+This is very likely the explanation behind a common complaint in the Hog/OSC
+community: "the console randomly stopped sending OSC" - anyone who left the
+console's OSC Out port on its own default (7001) was never going to get
+anything out of it, regardless of what changed on the receiving end. Worth
+checking first whenever OSC "stops working" on a console this module isn't
+controlling.
 
 ---
 
