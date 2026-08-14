@@ -2,7 +2,7 @@ import type { CompanionActionDefinitions, DropdownChoice } from '@companion-modu
 import { COMMAND_KEY_CHOICES, toWireKey } from './commandKeys.js'
 import { MASTER_COUNT } from './masters.js'
 
-export type SendOsc = (path: string, value: number) => void
+export type SendOsc = (path: string, value: number | string) => void
 
 /**
  * pig/release/blind/highlight/clear are confirmed in HOG_OSC_SPEC.md §4.
@@ -305,6 +305,21 @@ export function createActionDefinitions(send: SendOsc): CompanionActionDefinitio
       ],
       callback: (action) => {
         send(`/hog/hardware/encoderwheel/${Number(action.options.wheel)}`, Number(action.options.value))
+      },
+    },
+    send_custom_osc: {
+      name: 'Debug: Send Custom OSC Message',
+      description:
+        'For testing unconfirmed paths/hypotheses without writing new code - e.g. sending a string argument instead of the usual 1/0. If the value looks like a plain number it is sent as a float, otherwise as a string.',
+      options: [
+        { id: 'path', type: 'textinput', label: 'OSC Path', default: '/hog/hardware/', useVariables: true },
+        { id: 'value', type: 'textinput', label: 'Value', default: '1', useVariables: true },
+      ],
+      callback: (action) => {
+        const path = String(action.options.path)
+        const raw = String(action.options.value)
+        const asNumber = Number(raw)
+        send(path, raw.trim() !== '' && !Number.isNaN(asNumber) ? asNumber : raw)
       },
     },
   }

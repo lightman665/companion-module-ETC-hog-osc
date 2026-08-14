@@ -122,3 +122,17 @@ test('set_encoder_wheel sends the value to /hog/hardware/encoderwheel/<N>', () =
   ;(actions.set_encoder_wheel as any).callback(fakeAction({ wheel: 3, value: -10 }), {})
   assert.deepEqual(sent, [['/hog/hardware/encoderwheel/3', -10]])
 })
+
+test('send_custom_osc sends numeric-looking values as numbers', () => {
+  const sent: Array<[string, number | string]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.send_custom_osc as any).callback(fakeAction({ path: '/hog/hardware/one', value: '1' }), {})
+  assert.deepEqual(sent, [['/hog/hardware/one', 1]])
+})
+
+test('send_custom_osc sends non-numeric values as strings', () => {
+  const sent: Array<[string, number | string]> = []
+  const actions = createActionDefinitions((path, value) => sent.push([path, value]))
+  ;(actions.send_custom_osc as any).callback(fakeAction({ path: '/hog/status/commandline', value: '/' }), {})
+  assert.deepEqual(sent, [['/hog/status/commandline', '/']])
+})

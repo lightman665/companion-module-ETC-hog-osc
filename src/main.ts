@@ -81,7 +81,7 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
     this.socket = undefined
   }
 
-  private sendToConsole(path: string, value: number): void {
+  private sendToConsole(path: string, value: number | string): void {
     this.oscSend(this.config.host, this.config.sendPort, path, value)
   }
 
