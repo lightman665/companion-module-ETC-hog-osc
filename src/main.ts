@@ -1,11 +1,4 @@
-import {
-  InstanceBase,
-  InstanceStatus,
-  type CompanionVariableValues,
-  type InstanceTypes,
-  type SharedUdpSocket,
-  type SomeCompanionConfigField,
-} from '@companion-module/base'
+import { InstanceBase, InstanceStatus, type SharedUdpSocket, type SomeCompanionConfigField } from '@companion-module/base'
 import { DEFAULT_CONFIG, getConfigFields, type HogConfig } from './config.js'
 import { getVariableDefinitions } from './variables.js'
 import { decodeOscMessage } from './osc.js'
@@ -14,15 +7,10 @@ import { parseNamedButtonPath, toVariableId } from './namedButtons.js'
 import { parseMasterPath } from './masters.js'
 import { parseEncoderPath } from './encoders.js'
 import { SYSTEM_PATH_VARIABLES } from './systemPaths.js'
+import { createActionDefinitions } from './actions.js'
+import { createFeedbackDefinitions } from './feedbacks.js'
 import { HogState } from './state.js'
-
-interface HogInstanceTypes extends InstanceTypes {
-  config: HogConfig
-  secrets: undefined
-  actions: Record<string, never>
-  feedbacks: Record<string, never>
-  variables: CompanionVariableValues
-}
+import type { HogInstanceTypes } from './instanceTypes.js'
 
 class HogOscInstance extends InstanceBase<HogInstanceTypes> {
   private config: HogConfig = DEFAULT_CONFIG
@@ -32,6 +20,8 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
   async init(config: HogConfig): Promise<void> {
     this.config = config
     this.setVariableDefinitions(getVariableDefinitions())
+    this.setActionDefinitions(createActionDefinitions((path, value) => this.sendToConsole(path, value)))
+    this.setFeedbackDefinitions(createFeedbackDefinitions((variableId) => this.getVariableValue(variableId)))
     this.startListening()
   }
 
@@ -54,7 +44,7 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
 
     const socket = this.createSharedUdpSocket('udp4', (msg) => this.handleMessage(msg))
     socket.on('error', (err) => {
-      this.log('error', `Erro no socket UDP: ${err.message}`)
+      this.log('error', `UDP socket error: ${err.message}`)
       this.updateStatus(InstanceStatus.ConnectionFailure, err.message)
     })
     socket.bind(this.config.listenPort, undefined, () => {
@@ -67,6 +57,10 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
   private stopListening(): void {
     this.socket?.close()
     this.socket = undefined
+  }
+
+  private sendToConsole(path: string, value: number | string): void {
+    this.oscSend(this.config.host, this.config.sendPort, path, value)
   }
 
   private handleMessage(buf: Buffer): void {
@@ -83,6 +77,7 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
       this.setVariableValues({
         [`h${commandKey.physicalKey}_${commandKey.field}`]: value,
       })
+      this.checkFeedbacks('command_key_led')
       return
     }
 
@@ -91,6 +86,7 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
       this.setVariableValues({
         [`${toVariableId(namedButton.button)}_${namedButton.field}`]: value,
       })
+      this.checkFeedbacks('named_button_led')
       return
     }
 
@@ -108,6 +104,9 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
       this.setVariableValues({
         [`encoder${encoder.encoder}_${encoder.field}`]: value,
       })
+      if (encoder.field === 'label') {
+        this.checkFeedbacks('open_key_held')
+      }
       return
     }
 
