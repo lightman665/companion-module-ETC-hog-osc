@@ -39,6 +39,21 @@ npm run package
 This produces `etc-hog-osc-<version>.tgz`. In Companion, go to **Modules → Import
 module package**, and select that file.
 
+## Troubleshooting
+
+### Stick to port 7000 on the console
+
+The module's send/listen port config must match what the Hog console is
+actually using. Confirmed by testing: setting the console's own OSC port to
+something other than 7000 (e.g. 7001) breaks command reception on the
+console's side - see `HOG_OSC_SPEC.md` §2. Keep the console on its default
+port 7000.
+
+If the connection ends up in an error state (e.g. after experimenting with
+ports), the module doesn't always recover on its own once the config is
+corrected - manually **disable and re-enable** the connection (the toggle
+next to it on the Connections page) to force Companion to re-establish it.
+
 ## Reference
 
 All OSC paths and console quirks are documented, with evidence, in
