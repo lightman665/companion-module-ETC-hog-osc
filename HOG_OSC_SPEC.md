@@ -391,9 +391,11 @@ caminho** — duplo clique, Pig+U-key, e Open+U-key não têm nenhum sinal OSC d
 simples. A distinção entre modos acontece inteiramente no lado da consola (que função a tecla
 executa), não no protocolo OSC.
 
-**Ainda por confirmar**: se existe algum caminho de status/feedback (`/hog/status/u<N>/...`)
-quando a tecla é premida fisicamente na consola — o manual não documenta nenhum, e isto não foi
-testado.
+**Feedback de status: intencionalmente não existe, por design** (esclarecido pelo utilizador
+2026-08-14) — os U-Keys são configuráveis pelo utilizador para qualquer função (incluindo coisas
+sem estado próprio, como "lock console"), por isso a consola não tem como expor um feedback
+genérico e útil para eles. Isto não é uma lacuna a preencher mais tarde; não faz sentido
+continuar à procura de `/hog/status/u<N>/...`.
 
 **Como aplicar:** `press_u_key`/`release_u_key` já implementam o caminho confirmado acima e
 cobrem os 4 modos automaticamente (não há necessidade de ações separadas por modo, já que o
