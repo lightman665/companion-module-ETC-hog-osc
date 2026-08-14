@@ -71,6 +71,10 @@ every button can be freely **moved or copied** to any other page or position
 using Companion's own page-editor tools (confirmed to work both within a page
 and across pages), exactly like any button you built by hand.
 
+They also work well as a **starting point for your own pages**: import one,
+duplicate the button closest to what you need, and adjust its key number,
+text, or action - much faster than building a styled button from scratch.
+
 ### Why no Presets tab yet
 
 This module's source includes a full set of Presets (`src/presets.ts`) matching
