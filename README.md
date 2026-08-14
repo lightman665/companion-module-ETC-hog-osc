@@ -44,20 +44,31 @@ module package**, and select that file.
 All OSC paths and console quirks are documented, with evidence, in
 [HOG_OSC_SPEC.md](./HOG_OSC_SPEC.md).
 
-## Getting started: import the starter page
+## Getting started: import a template page
 
 This module doesn't ship Companion Presets yet (see below for why) - instead,
-import [`examples/starter-page.companionconfig`](./examples/starter-page.companionconfig)
-directly as a page to get a fully working, fully styled set of buttons, LED
-feedback included:
+[`examples/`](./examples) has full **template pages** (`.companionconfig` files)
+you import directly to get fully working, fully styled buttons, LED feedback
+included:
 
-1. In Companion, go to **Settings → Import/Export → Import**, and select
-   `examples/starter-page.companionconfig`.
+| File | Contents |
+|---|---|
+| `starter-page.companionconfig` | Command Keys 1-12 + FUNC, and Pig/Release/Blind/Clear/Highlight, on two pages |
+| `u-keys-page.companionconfig` | U1-U12 (single press) |
+| `programming-keys-page.companionconfig` | Delete/Move/Copy/Back/Clear/Update/Merge/Record/All/Blind/Pig/Next/Hilite |
+
+To import one:
+
+1. In Companion, go to **Settings → Import/Export → Import**, and select the file.
 2. Companion will ask you to map the file's `hog-osc` connection reference to
    your own connection instance - pick your existing one.
-3. Two pages are added: **Command Keys** (the 12 command keys + FUNC) and
-   **Hardware Buttons** (Pig, Release, Blind, Clear, Highlight) - fully styled,
-   with working LED feedback, no manual setup needed.
+3. The page(s) are added, fully styled, with working LED feedback where
+   applicable - no manual setup needed.
+
+These are regular Companion pages, not a special mechanism - once imported,
+every button can be freely **moved or copied** to any other page or position
+using Companion's own page-editor tools (confirmed to work both within a page
+and across pages), exactly like any button you built by hand.
 
 ### Why no Presets tab yet
 
