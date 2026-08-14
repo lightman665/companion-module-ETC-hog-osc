@@ -83,9 +83,10 @@ importing *any* file (the same one again, to pick up a fix, or even a
 different one) at a page number you're already using **overwrites whatever
 is there**, silently. If you've moved things around or already have your own
 page 3, for example, importing `u-keys-page.companionconfig` will overwrite
-it. Before importing, check the destination page number Companion offers and
-change it if needed, or back up your current page first (page editor
-toolbar → **Export Page**). If you only want to recover
+it. Before importing, use the **Buttons** tab in the import dialog to review
+and, if needed, change the destination page number for what you're about to
+import - or back up your current page first (page editor toolbar → **Export
+Page**). If you only want to recover
 one deleted button, import the template into an empty/spare page instead of
 your customized one, copy just that button back over, then delete the spare
 page.
