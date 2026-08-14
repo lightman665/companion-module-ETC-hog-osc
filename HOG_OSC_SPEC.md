@@ -282,18 +282,38 @@ funciona corretamente na aplicação Hog PC (software), ao contrário da consola
 tecla 12 não produz efeito. Sugere um problema específico do hardware físico desta consola (ou
 desta unidade em particular), não da lógica da consola em geral.
 
+**Também não funciona via OSC/Companion (2026-08-14):** testado enviando `press_command_key`
+(tecla 12) a partir de um botão do Companion - `/hog/hardware/h13` (offset +1 aplicado) - e a
+página de comandos não muda, tal como a tecla física. Ou seja, o problema não é só do contacto
+físico da tecla; a própria função de mudança de página associada à tecla 12 não responde,
+mesmo quando acionada via OSC - mas continua a ser um problema do hardware desta consola
+(mesa), não da lógica geral da consola: o envio via OSC chega à mesma mesa física com o mesmo
+problema, enquanto o Hog PC (que corre à parte, sem depender do hardware da mesa) continua a
+funcionar corretamente, como já referido acima. `press_command_key`/`release_command_key` continuam corretos e
+disponíveis no módulo para as outras 11 teclas de comando (uso normal), mas não devem ser
+usados para a tecla 12 com o objetivo de mudar de página - ver `func` abaixo para a alternativa
+que funciona.
+
 **Tecla física "FUNC" (2026-08-14, captura Protokol):** produz exatamente o mesmo burst de
 refresh (h6 a h13, `line1`/`line2` a vazio) associado à mudança de página dos command keys
 acima. Não tem caminho OSC documentado em nenhuma das fontes conhecidas (manual oficial nem
 highend-hog4). Combinada com Open (Open+FUNC), abre um diretório/menu de comandos - função
-distinta, não testada ao nível OSC. `FUNC` sozinha ainda não tem um caminho `/hog/hardware/...`
-confirmado nem sequer palpitado - por investigar se algum dia for preciso enviá-la a partir do
-Companion.
+distinta, não testada ao nível OSC.
 
-**Por confirmar (2026-08-14, informação contraditória ainda a esclarecer):** não está claro se
-FUNC sozinha, Pig+FUNC, ou Open+FUNC é que realmente muda a página dos command keys de forma
-visível e persistente na consola - as primeiras impressões do utilizador variaram entre testes.
-Não assumir nenhuma combinação como confirmada até haver um teste direto e inequívoco.
+**Confirmado (2026-08-14):** `/hog/hardware/func` (padrão de nomenclatura igual aos restantes
+botões de hardware) foi testado a partir do Companion e **muda mesmo de página de comandos** -
+a mesma função que o rótulo da tecla 12 anuncia mas que atualmente não funciona nesta consola
+(ver acima). Adicionado a `HARDWARE_BUTTON_CHOICES` como `func`. Isto dá ao módulo uma forma
+funcional de mudar de página de comandos via Companion enquanto a tecla física 12 não é
+resolvida pela ETC - usar `press_hardware_button`/`release_hardware_button` com `func` em vez
+de `press_command_key`/`release_command_key` com a tecla 12. Solução temporária: até a ETC
+resolver esta discrepância hardware vs. software da tecla 12, o botão físico correspondente
+à tecla 12 no layout de exemplo do Companion foi substituído por `func`.
+
+Nota: a ambiguidade anterior sobre "FUNC sozinha vs Pig+FUNC vs Open+FUNC" referia-se à tecla
+física pressionada diretamente na consola. O teste confirmado aqui é especificamente o envio de
+`/hog/hardware/func` via OSC/Companion (equivalente a "FUNC sozinha"), que resultou numa mudança
+de página visível e consistente.
 
 ---
 

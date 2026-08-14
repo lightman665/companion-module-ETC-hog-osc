@@ -42,6 +42,12 @@ export type SendOsc = (path: string, value: number | string) => void
  * highend-hog4. Confirmed via Protokol that the physical "/" key DOES work
  * and echoes correctly to /hog/status/commandline - only the Companion-side
  * send path is wrong. See HOG_OSC_SPEC.md §17 for the note.
+ *
+ * "func" is CONFIRMED by real console testing 2026-08-14: /hog/hardware/func
+ * changes the command key page (the same function Command Key 12's label
+ * advertises but currently fails to perform on this console - see
+ * HOG_OSC_SPEC.md §11). Not in the manual or highend-hog4 - found by testing
+ * the same naming pattern used by every other confirmed hardware button.
  */
 const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'pig',
@@ -49,6 +55,7 @@ const HARDWARE_BUTTON_CHOICES: DropdownChoice[] = [
   'blind',
   'highlight',
   'clear',
+  'func',
   'record',
   'merge',
   'copy',
