@@ -32,5 +32,20 @@ export function createFeedbackDefinitions(getVariableValue: GetVariableValue): C
         return Number(getVariableValue(`${toVariableId(button)}_led`)) === 1
       },
     },
+    open_key_held: {
+      type: 'boolean',
+      name: 'Open Key premida (indireto)',
+      description:
+        'Open has no dedicated OSC path (HOG_OSC_SPEC.md §16) - while held, the console relabels the 3 encoder wheels to their Open+Encoder combo functions (Scroll Up/Down, Scroll Left/Right, Zoom). This checks all 3 at once as an indirect "Open is held" signal; requires all 3 to avoid false positives from other combos that only touch one wheel.',
+      options: [],
+      defaultStyle: { bgcolor: combineRgb(0, 128, 255) },
+      callback: () => {
+        return (
+          String(getVariableValue('encoder1_label') ?? '') === 'Scroll Up/Down' &&
+          String(getVariableValue('encoder2_label') ?? '') === 'Scroll Left/Right' &&
+          String(getVariableValue('encoder3_label') ?? '') === 'Zoom'
+        )
+      },
+    },
   }
 }

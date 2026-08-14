@@ -126,6 +126,9 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
       this.setVariableValues({
         [`encoder${encoder.encoder}_${encoder.field}`]: value,
       })
+      if (encoder.field === 'label') {
+        this.checkFeedbacks('open_key_held')
+      }
       return
     }
 

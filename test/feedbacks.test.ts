@@ -44,3 +44,23 @@ test('named_button_led handles button names with spaces via toVariableId', () =>
 
   assert.equal((feedbacks.named_button_led as any).callback(fakeFeedback({ button: 'go back' }), {}), true)
 })
+
+test('open_key_held is true only when all 3 encoder wheels show the Open+Encoder labels', () => {
+  const values: Record<string, unknown> = {
+    encoder1_label: 'Scroll Up/Down',
+    encoder2_label: 'Scroll Left/Right',
+    encoder3_label: 'Zoom',
+  }
+  const feedbacks = createFeedbackDefinitions((id) => values[id])
+
+  assert.equal((feedbacks.open_key_held as any).callback(fakeFeedback({}), {}), true)
+})
+
+test('open_key_held is false when the encoder labels are empty or only partially match', () => {
+  const feedbacks = createFeedbackDefinitions(() => undefined)
+  assert.equal((feedbacks.open_key_held as any).callback(fakeFeedback({}), {}), false)
+
+  const partial: Record<string, unknown> = { encoder1_label: 'Scroll Up/Down' }
+  const partialFeedbacks = createFeedbackDefinitions((id) => partial[id])
+  assert.equal((partialFeedbacks.open_key_held as any).callback(fakeFeedback({}), {}), false)
+})
