@@ -139,9 +139,22 @@ const MASTER_KEY_CHOICES: DropdownChoice[] = ['choose', 'go', 'pause', 'goback',
   label: id,
 }))
 
-const MASTER_NUMBER_CHOICES: DropdownChoice[] = Array.from({ length: MASTER_COUNT }, (_, i) => ({
+/**
+ * The dropdown for press/release_master_key intentionally goes up to 90 (9 banks x 10
+ * masters, per the user's description of the console's bank structure - HOG_OSC_SPEC.md
+ * §21), NOT MASTER_COUNT (36, the packet-confirmed range for status variables). Sending
+ * an action doesn't require the same prior confirmation as claiming a status variable
+ * exists - this is just making the dropdown cover the full known range. Displayed as
+ * "Master 1"-"Master 90" (1-based, matching the console's own UI) but the OSC value sent
+ * is 0-based (id), matching "os bank masters começam no zero" per the user.
+ */
+const MASTER_BANK_COUNT = 9
+const MASTERS_PER_BANK = 10
+const TOTAL_MASTERS = MASTER_BANK_COUNT * MASTERS_PER_BANK
+
+const MASTER_NUMBER_CHOICES: DropdownChoice[] = Array.from({ length: TOTAL_MASTERS }, (_, i) => ({
   id: i,
-  label: `Master ${i}`,
+  label: `Master ${i + 1}`,
 }))
 
 /**
