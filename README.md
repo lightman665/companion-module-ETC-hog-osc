@@ -51,12 +51,12 @@ This module doesn't ship Companion Presets yet (see below for why) - instead,
 you import directly to get fully working, fully styled buttons, LED feedback
 included:
 
-| File | Contents |
-|---|---|
-| `commands-page.companionconfig` | Command Keys 1-12 + FUNC, and Pig/Release/Blind/Clear/Highlight, on two pages |
-| `u-keys-page.companionconfig` | U1-U12 (single press) |
-| `programming-keys-page.companionconfig` | Delete/Move/Copy/Back/Clear/Update/Merge/Record/All/Blind/Pig/Next/Hilite |
-| `navigation-page.companionconfig` | Backspace, +/-/Full/@, Thru/Set, cursor diamond (arrows), Enter, Pig |
+| File | Page # | Contents |
+|---|---|---|
+| `commands-page.companionconfig` | 1, 2 | Command Keys 1-12 + FUNC, and Pig/Release/Blind/Clear/Highlight |
+| `u-keys-page.companionconfig` | 3 | U1-U12 (single press) |
+| `programming-keys-page.companionconfig` | 4 | Delete/Move/Copy/Back/Clear/Update/Merge/Record/All/Blind/Pig/Next/Hilite |
+| `navigation-page.companionconfig` | 5 | Backspace, +/-/Full/@, Thru/Set, cursor diamond (arrows), Enter, Pig |
 
 To import one:
 
@@ -75,12 +75,17 @@ They also work well as a **starting point for your own pages**: import one,
 duplicate the button closest to what you need, and adjust its key number,
 text, or action - much faster than building a styled button from scratch.
 
-**Careful when re-importing**: each page in these files carries a fixed
-internal page ID, so importing the *same* file again updates that page in
-place instead of creating a duplicate - convenient for picking up an updated
-template, but if you've since customized that page yourself, re-importing
-will overwrite your changes. Before re-importing, back up your current page
-first (page editor toolbar → **Export Page**). If you only want to recover
+**Careful with page numbers**: each file targets a specific page number (see
+the table above - they're pre-assigned so the four files don't collide with
+each other when imported in order). Companion matches an imported page to
+your destination by that page **number**, not by name or content - so
+importing *any* file (the same one again, to pick up a fix, or even a
+different one) at a page number you're already using **overwrites whatever
+is there**, silently. If you've moved things around or already have your own
+page 3, for example, importing `u-keys-page.companionconfig` will overwrite
+it. Before importing, check the destination page number Companion offers and
+change it if needed, or back up your current page first (page editor
+toolbar → **Export Page**). If you only want to recover
 one deleted button, import the template into an empty/spare page instead of
 your customized one, copy just that button back over, then delete the spare
 page.
