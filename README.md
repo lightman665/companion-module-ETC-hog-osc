@@ -75,6 +75,16 @@ They also work well as a **starting point for your own pages**: import one,
 duplicate the button closest to what you need, and adjust its key number,
 text, or action - much faster than building a styled button from scratch.
 
+**Careful when re-importing**: each page in these files carries a fixed
+internal page ID, so importing the *same* file again updates that page in
+place instead of creating a duplicate - convenient for picking up an updated
+template, but if you've since customized that page yourself, re-importing
+will overwrite your changes. Before re-importing, back up your current page
+first (page editor toolbar → **Export Page**). If you only want to recover
+one deleted button, import the template into an empty/spare page instead of
+your customized one, copy just that button back over, then delete the spare
+page.
+
 ### Why no Presets tab yet
 
 This module's source includes a full set of Presets (`src/presets.ts`) matching
