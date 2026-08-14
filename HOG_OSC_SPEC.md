@@ -55,6 +55,17 @@ anything out of it, regardless of what changed on the receiving end. Worth
 checking first whenever OSC "stops working" on a console this module isn't
 controlling.
 
+**Possible explanation, not confirmed (2026-08-14):** one hypothesis (from
+the operator's own recollection, not tested directly) is that the console
+used to broadcast every key press over OSC, visible in the console's MIDI
+viewer, which was confusing enough that OSC output would almost always get
+switched off - and that this traffic has since disappeared entirely from the
+MIDI viewer. This is consistent with port 7001 being effectively blocked on
+this console rather than a general protocol-level bug, but it hasn't been
+tested directly (e.g. no confirmation that re-enabling output restores it,
+or that a factory-reset console behaves differently). Noted here as a lead
+for whoever investigates this further, not as an established fact.
+
 ---
 
 ## 3. Confirmed OSC paths (incoming — console → Companion)
