@@ -7,25 +7,23 @@ export type SendOsc = (path: string, value: number) => void
 /**
  * pig/release/blind/highlight/clear are confirmed in HOG_OSC_SPEC.md §4.
  *
- * record/merge/copy/next/back (originally from the official ETC Hog
- * Operations Manual §22.4.2) and delete/move/update (originally bulk-copied
- * from highend-hog4) are now CONFIRMED by real console testing 2026-08-14.
+ * CONFIRMED by real console testing 2026-08-14: record/merge/copy/next/back
+ * (originally from the official ETC Hog Operations Manual §22.4.2);
+ * delete/move/update (originally bulk-copied from highend-hog4); and
+ * zero/one/two/three/four/five/six/seven/eight/nine/period/at/minus/plus/
+ * thru/full/backspace/enter/up/down/left/right/live/scene/cue/fan/
+ * intensity/position/colour (also bulk-copied from highend-hog4, tested via
+ * the "Test A"/"Test B" scratchpad pages).
  *
- * macro/list/page/setup/goto/set are still UNVERIFIED (2026-08-14), added
- * from the separate, established bitfocus/companion-module-highend-hog4
- * project's src/setup.js (HardwareKey choices) - the same source that
- * correctly matched every other already-confirmed id in this list (pig,
- * release, blind, highlight, clear, record, merge, copy, delete, move,
- * update). It also listed "open", which we tested and disproved (see
- * below) - so this source is a good lead but not proof for the remaining
- * untested ids; test each before fully trusting them.
- *
- * The remaining ids below (zero..nine, period, at, minus, plus, slash, thru,
- * full, backspace, enter, up, down, left, right, live, scene, cue, fan,
- * intensity, position, colour, beam, effect, time, group, fixture, maingo,
- * mainhalt, mainback, mainchoose, skipfwd, skipback, assert, restore, rate)
- * were bulk-copied (2026-08-14) from the same highend-hog4 source for future
- * use - also entirely UNVERIFIED, same caveat as above applies to all of them.
+ * macro/list/page/setup/goto/set/beam/effect/time/group/fixture/maingo/
+ * mainhalt/mainback/mainchoose/skipfwd/skipback/assert/restore/rate are
+ * still UNVERIFIED (2026-08-14), added from the separate, established
+ * bitfocus/companion-module-highend-hog4 project's src/setup.js
+ * (HardwareKey choices) - the same source that correctly matched every
+ * already-confirmed id above. It also listed "open" and "slash", which we
+ * tested and disproved (see below) - so this source is a good lead but not
+ * proof for the remaining untested ids; test each before fully trusting
+ * them.
  *
  * "open" is deliberately NOT in this list: tested against the real console
  * 2026-08-13 (pressed via Companion) and /hog/hardware/open did nothing -
