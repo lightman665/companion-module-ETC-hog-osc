@@ -12,6 +12,8 @@ import { decodeOscMessage } from './osc.js'
 import { parseCommandKeyPath } from './commandKeys.js'
 import { parseNamedButtonPath, toVariableId } from './namedButtons.js'
 import { parseMasterPath } from './masters.js'
+import { parseEncoderPath } from './encoders.js'
+import { SYSTEM_PATH_VARIABLES } from './systemPaths.js'
 import { HogState } from './state.js'
 
 interface HogInstanceTypes extends InstanceTypes {
@@ -98,6 +100,20 @@ class HogOscInstance extends InstanceBase<HogInstanceTypes> {
       this.setVariableValues({
         [`master${master.master}_${master.action}${suffix}`]: value,
       })
+      return
+    }
+
+    const encoder = parseEncoderPath(message.address)
+    if (encoder) {
+      this.setVariableValues({
+        [`encoder${encoder.encoder}_${encoder.field}`]: value,
+      })
+      return
+    }
+
+    const systemVariable = SYSTEM_PATH_VARIABLES[message.address]
+    if (systemVariable) {
+      this.setVariableValues({ [systemVariable]: value })
     }
   }
 }
