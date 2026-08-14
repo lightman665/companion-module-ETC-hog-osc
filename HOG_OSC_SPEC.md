@@ -38,11 +38,12 @@ no race, immune to bursts.
 The console uses the **same port (7000)** to send state and receive commands.
 
 **Confirmed (2026-08-14): setting the console to a non-default port (7001)
-breaks command reception.** With the console's own OSC port configured to
-7001 instead of 7000, it stops receiving/acting on incoming commands
-entirely - suggests the console's receive side doesn't fully honor a
-non-default port setting, even though the setting itself is changeable.
-Stick to port 7000 on the console side until this is better understood.
+breaks OSC entirely, both directions.** With the console's own OSC port
+configured to 7001 instead of 7000, it neither receives/acts on incoming
+commands nor sends its status updates - suggests the console doesn't fully
+honor a non-default port setting on either the send or receive side, even
+though the setting itself is changeable. Stick to port 7000 on the console
+side until this is better understood.
 
 ---
 
