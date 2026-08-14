@@ -1,60 +1,60 @@
-# Hog OSC — Especificação para módulo Bitfocus Companion
+# Hog OSC — Specification for the Bitfocus Companion module
 
-Documento de referência com tudo confirmado empiricamente por captura de tráfego OSC
-(Wireshark + logs do Companion + Protokol) contra uma consola **Gig Hog** a correr
+Reference document with everything confirmed empirically by capturing OSC traffic
+(Wireshark + Companion logs + Protokol) against a **Gig Hog** console running
 **Hog OS 5.2.0 (build 212)**.
 
-Todos os comportamentos aqui descritos foram verificados com evidência ao nível do pacote,
-não assumidos a partir do manual. Onde o manual contradiz o observado, está assinalado.
+All behavior described here has been verified with packet-level evidence, not assumed
+from the manual. Where the manual contradicts what was observed, it is flagged.
 
 ---
 
-## 1. Objetivo do módulo
+## 1. Purpose of the module
 
-Substituir o workaround atual (módulo `generic-osc` + 36 triggers + variáveis personalizadas),
-que é **estruturalmente pouco fiável**.
+Replace the current workaround (`generic-osc` module + 36 triggers + custom variables),
+which is **structurally unreliable**.
 
-**Porquê:** o `generic-osc` só expõe duas variáveis partilhadas e voláteis
-(`latest_received_path` e `latest_received_args`), sobrescritas a cada mensagem que chega.
-A Hog envia **rajadas de 20+ mensagens em ~350 ms**, com intervalos de 5–60 ms entre elas.
-Não há forma fiável de capturar cada valor a tempo — testado por eventos, por dispatcher
-único e por polling a 100 ms; todos falham de forma intermitente.
+**Why:** `generic-osc` only exposes two shared, volatile variables
+(`latest_received_path` and `latest_received_args`), overwritten by every incoming message.
+Hog sends **bursts of 20+ messages in ~350 ms**, with 5–60 ms gaps between them.
+There's no reliable way to capture each value in time — tested via events, a single
+dispatcher, and 100 ms polling; all fail intermittently.
 
-**Solução:** o módulo mantém um **dicionário interno** (`Map<path, value>`) atualizado a cada
-mensagem recebida, e expõe **uma variável Companion por caminho**. Sem estado partilhado,
-sem corrida, imune a rajadas.
+**Solution:** the module keeps an **internal dictionary** (`Map<path, value>`) updated on
+every incoming message, and exposes **one Companion variable per path**. No shared state,
+no race, immune to bursts.
 
 ---
 
-## 2. Ligação
+## 2. Connection
 
 | | |
 |---|---|
-| Transporte | UDP (só UDP — ver §7) |
-| Consola → Companion | Consola envia de `172.31.0.1:7000` |
-| Porta de escuta | 7009 (configurável) |
-| Companion → Consola | Envia para `172.31.0.1:7000` |
+| Transport | UDP (UDP only — see §7) |
+| Console → Companion | Console sends from `172.31.0.1:7000` |
+| Listen port | 7009 (configurable) |
+| Companion → Console | Sends to `172.31.0.1:7000` |
 
-A consola usa a **mesma porta (7000)** para enviar estado e receber comandos.
+The console uses the **same port (7000)** to send state and receive commands.
 
 ---
 
-## 3. Caminhos OSC confirmados (entrada — consola → Companion)
+## 3. Confirmed OSC paths (incoming — console → Companion)
 
 ### 3.1 Command keys (h-keys)
 
-| Caminho | Tipo | Notas |
+| Path | Type | Notes |
 |---|---|---|
-| `/hog/status/h<N>/line1` | string | Nome do objeto atribuído |
-| `/hog/status/h<N>/line2` | string | Estado (`on`, `on 1`, `....`, `Cue 1`, texto livre) |
-| `/hog/status/led/h<N>` | float 0/1 | Estado aceso/apagado |
-| `/hog/status/led/h<N>color` | string hex | **Sem barra antes de `color`** — ver §6 |
+| `/hog/status/h<N>/line1` | string | Name of the assigned object |
+| `/hog/status/h<N>/line2` | string | State (`on`, `on 1`, `....`, `Cue 1`, free text) |
+| `/hog/status/led/h<N>` | float 0/1 | On/off state |
+| `/hog/status/led/h<N>color` | string hex | **No slash before `color`** — see §6 |
 
-> **Atenção ao offset** — ver §5.
+> **Watch the offset** — see §5.
 
-### 3.2 Botões nomeados (front panel)
+### 3.2 Named buttons (front panel)
 
-Todos com o par `<nome>` (float 0/1) e `<nome>color` (string hex):
+All with the pair `<name>` (float 0/1) and `<name>color` (string hex):
 
 ```
 blind, clear, highlight, macro, ratedisabled, dbo, thruster upper,
@@ -64,14 +64,14 @@ play, pause, go back,
 flash
 ```
 
-Nota: `colour` (grafia britânica) para o botão; mas o sufixo de cor é sempre `color`
-(americana). Ex.: `/hog/status/led/colourcolor`.
+Note: `colour` (British spelling) for the button; but the color suffix is always `color`
+(American spelling). E.g.: `/hog/status/led/colourcolor`.
 
-Nota: `thruster upper` e `go back` contêm **espaço** no caminho.
+Note: `thruster upper` and `go back` contain a **space** in the path.
 
-### 3.3 Masters de playback
+### 3.3 Playback masters
 
-Confirmado de **0 a 35** (36 masters):
+Confirmed from **0 to 35** (36 masters):
 
 ```
 /hog/status/led/go/<M>          float 0/1   + /go/<M>color
@@ -81,8 +81,8 @@ Confirmado de **0 a 35** (36 masters):
 /hog/status/led/choose/<M>      float 0/1
 ```
 
-> **Contradiz o manual.** A secção 22.5.1 do manual v5.2.0 afirma que o Hog OS não envia
-> atividade de playback via OSC. É falso — envia, e de forma detalhada.
+> **Contradicts the manual.** Section 22.5.1 of the v5.2.0 manual states that Hog OS
+> doesn't send playback activity over OSC. That's false — it does, and in detail.
 
 ### 3.4 Encoder wheels
 
@@ -91,71 +91,71 @@ Confirmado de **0 a 35** (36 masters):
 /hog/status/encoderwheel<1-5>/value    string
 ```
 
-Ex.: `label="Playback Rate"`, `value="100%"`; `label="Intensity"`, `value="Full"`.
-Os labels mudam conforme o contexto (ex. `Scroll Up/Down`, `Zoom`).
+E.g.: `label="Playback Rate"`, `value="100%"`; `label="Intensity"`, `value="Full"`.
+Labels change depending on context (e.g. `Scroll Up/Down`, `Zoom`).
 
-**Cuidado:** os labels chegam **fragmentados** — primeiro truncados a 7 caracteres, depois
-completos. Ex.: `"Playbac"` seguido de `"Playback Rate"`. O módulo deve aceitar sempre o
-último valor recebido.
+**Careful:** labels arrive **fragmented** — first truncated to 7 characters, then
+complete. E.g.: `"Playbac"` followed by `"Playback Rate"`. The module should always
+accept the latest value received.
 
-### 3.5 Sistema
+### 3.5 System
 
 ```
 /hog/system/time              string HH:MM:SS   heartbeat, ~1–2 s
-/hog/status/commandline       string            eco em tempo real da linha de comando
-/hog/status/led/flash         float 0/1         + flashcolor — pisca continuamente
+/hog/status/commandline       string            real-time echo of the command line
+/hog/status/led/flash         float 0/1         + flashcolor — blinks continuously
 ```
 
-O `commandline` reflete o que está a ser escrito, carácter a carácter
-(ex.: `"Scene 1"` → `"Scene 1 Move To"` → `"Scene 1 Record Command 1 "`).
-Útil para mostrar a linha de comando ao vivo no Stream Deck.
+`commandline` reflects what's being typed, character by character
+(e.g.: `"Scene 1"` → `"Scene 1 Move To"` → `"Scene 1 Record Command 1 "`).
+Useful for showing the live command line on the Stream Deck.
 
 ---
 
-## 4. Caminhos OSC de saída (comando — Companion → consola)
+## 4. Outgoing OSC paths (command — Companion → console)
 
 ```
 /hog/hardware/h<N>       0 = up, 1 = down     command keys
-/hog/hardware/pig        0/1                  modificador Pig
+/hog/hardware/pig        0/1                  Pig modifier
 /hog/hardware/release    0/1
 /hog/hardware/blind      0/1
 /hog/hardware/highlight  0/1
 /hog/hardware/clear      0/1
-/hog/playback/release/0 <lista>   liberta cuelist por número de lista
-/hog/playback/release/1 <cena>
+/hog/playback/release/0 <list>   releases a cuelist by list number
+/hog/playback/release/1 <scene>
 /hog/playback/release/2 <macro>
 ```
 
 ---
 
-## 5. BUG CONFIRMADO — offset de +1 nas command keys
+## 5. CONFIRMED BUG — +1 offset on command keys
 
-**Tecla física N ⟶ `h(N+1)` em todos os caminhos.**
+**Physical key N ⟶ `h(N+1)` on all paths.**
 
-| Tecla física | Caminho OSC |
+| Physical key | OSC path |
 |---|---|
 | 1 | `h2` |
 | 2 | `h3` |
 | … | … |
 | 12 | `h13` |
 
-Aplica-se tanto ao **envio** (`/hog/hardware/h<N>`) como à **receção** (`/hog/status/h<N>/...`).
+Applies both to **sending** (`/hog/hardware/h<N>`) and **receiving** (`/hog/status/h<N>/...`).
 
-Contradiz o próprio manual, cujo exemplo documenta `/hog/status/h1/line1` para a tecla 1.
-Reportado no fórum ETC ("BUG Report - OSC - Function Keys numbers are off by 1").
+Contradicts the manual itself, whose example documents `/hog/status/h1/line1` for key 1.
+Reported on the ETC forum ("BUG Report - OSC - Function Keys numbers are off by 1").
 
-**O módulo deve esconder isto**: o utilizador escolhe "Command Key 5", o módulo trata
-internamente de `h6`.
+**The module must hide this:** the user picks "Command Key 5", the module internally
+handles `h6`.
 
-**Exceção importante:** no dump completo gerado por log off + relaunch, a consola envia
-`h1`–`h12` **sem offset**. Ou seja, a indexação interna real é 1–12; o offset parece ser um
-bug apenas nos eventos individuais.
+**Important exception:** in the full dump generated by log off + relaunch, the console
+sends `h1`–`h12` **with no offset**. In other words, the real internal indexing is 1–12;
+the offset appears to be a bug only in individual events.
 
 ---
 
-## 6. Formato dos caminhos de cor
+## 6. Color path format
 
-O sufixo de cor é **concatenado ao nome, sem barra**:
+The color suffix is **concatenated to the name, with no slash**:
 
 ```
 ✅ /hog/status/led/h2color
@@ -166,42 +166,44 @@ O sufixo de cor é **concatenado ao nome, sem barra**:
 
 ---
 
-## 7. TCP não é viável
+## 7. TCP is not viable
 
-A consola oferece TCP com framing SLIP ou HDR. Testado exaustivamente contra ambos os modos
-TCP do `generic-osc` (TCP e TCP RAW): ou não liga, ou liga e morre ao fim de segundos.
+The console offers TCP with SLIP or HDR framing. Tested exhaustively against both
+`generic-osc` TCP modes (TCP and TCP RAW): either it doesn't connect, or it connects and
+dies within seconds.
 
-**Usar apenas UDP.**
+**Use UDP only.**
 
 ---
 
-## 8. Quando é que `line1` (nome) é enviado
+## 8. When `line1` (name) is sent
 
-`line1` **não** é transmitido continuamente. É enviado apenas quando o nome apresentado muda:
+`line1` is **not** transmitted continuously. It's only sent when the displayed name
+changes:
 
-| Ação | Envia `line1`? |
+| Action | Sends `line1`? |
 |---|---|
-| Rename (selecionar objeto → `SET` → texto → Enter) | ✅ |
-| `[Objeto] Move To [tecla]` | ✅ |
-| `[Objeto] Copy To [tecla]` | ✅ |
-| `Delete Command <N>` | ✅ (string vazia) |
-| Copiar na diretoria (gera `"Copy of <nome>"`) | ✅ |
-| Disparar a tecla (Go/Off) | ❌ |
-| Mudar a cor do objeto | ❌ |
+| Rename (select object → `SET` → text → Enter) | ✅ |
+| `[Object] Move To [key]` | ✅ |
+| `[Object] Copy To [key]` | ✅ |
+| `Delete Command <N>` | ✅ (empty string) |
+| Copy within the directory (generates `"Copy of <name>"`) | ✅ |
+| Firing the key (Go/Off) | ❌ |
+| Changing the object's color | ❌ |
 | Undo / Redo | ❌ |
 
-Na Hog **toda** a atribuição passa pela sintaxe da linha de comando
-(`Move To`, `Copy To`, `Record To`, `Merge To`, `Update To`, `Delete To`) — não existe
-drag-and-drop. Portanto o fluxo de trabalho normal já mantém `line1` sincronizado.
+On Hog, **all** assignment goes through command-line syntax
+(`Move To`, `Copy To`, `Record To`, `Merge To`, `Update To`, `Delete To`) — there's no
+drag-and-drop. So the normal workflow already keeps `line1` in sync.
 
-**Consequência para o módulo:** deve **persistir** os valores recebidos. Não há forma de
-pedir o estado atual a qualquer momento (ver §9).
+**Consequence for the module:** it must **persist** the values received. There's no way
+to request the current state at any point (see §9).
 
 ---
 
-## 9. BUG CONFIRMADO — comandos de refresh não funcionam
+## 9. CONFIRMED BUG — refresh commands don't work
 
-Documentados no manual (secção 22.4.5), mas sem qualquer efeito na v5.2.0:
+Documented in the manual (section 22.4.5), but with no effect on v5.2.0:
 
 ```
 /hog/command  refreshall
@@ -209,166 +211,170 @@ Documentados no manual (secção 22.4.5), mas sem qualquer efeito na v5.2.0:
 /hog/command  consolefaderrefresh
 ```
 
-Não produzem resposta nenhuma. Reportado no fórum ETC.
+Produce no response at all. Reported on the ETC forum.
 
-**Único mecanismo de sincronização completa:** fazer **log off + relaunch da sessão** na
-consola. Isso gera um dump completo do estado — todos os `h1`–`h12` (sem offset), os 36
-masters de playback, e todos os botões nomeados.
+**Only full-sync mechanism:** doing a **log off + session relaunch** on the console.
+This generates a full state dump — all `h1`–`h12` (no offset), the 36 playback masters,
+and all named buttons.
 
-> **Regra prática obrigatória:** o Companion tem de estar ligado e a ouvir no momento em que
-> a sessão é lançada, senão perde-se esta oportunidade e fica com dados desatualizados até
-> cada tecla mudar individualmente.
-
----
-
-## 10. A cor real do objeto NÃO existe via OSC
-
-`/hog/status/led/h<N>color` **não** reflete a cor atribuída à cuelist/scene/page.
-Transmite apenas o ciclo genérico de piscar do LED:
-
-```
-ffffff  aceso
-000000  apagado
-0000ff  transição/inativo
-```
-
-Testado isoladamente: cuelist alternada entre laranja e vermelho, com a tecla ativa, com e
-sem Undo/Redo. **Nenhuma dessas cores apareceu em momento algum.**
-
-Faz sentido: a cor é atribuída por um módulo separado (botão direito → color picker) e é um
-atributo do objeto, não do estado da tecla.
-
-**Implicação:** o módulo pode usar `h<N>color` como indicador de atividade (pisca enquanto
-a tecla está ativa), mas nunca como "a cor da cuelist". Recomenda-se filtrar `000000` para
-evitar cintilação visual.
+> **Mandatory rule of thumb:** Companion must be connected and listening at the moment
+> the session launches, otherwise this window is missed and the module is left with
+> stale data until each key changes individually.
 
 ---
 
-## 11. BUG — tecla 12 e mudança de página
+## 10. The object's real color does NOT exist over OSC
 
-A tecla 12 por vezes provoca o envio de um endereço malformado:
+`/hog/status/led/h<N>color` does **not** reflect the color assigned to the
+cuelist/scene/page. It only transmits the generic LED blink cycle:
+
+```
+ffffff  on
+000000  off
+0000ff  transition/inactive
+```
+
+Tested in isolation: cuelist alternated between orange and red, with the key active,
+with and without Undo/Redo. **None of those colors ever appeared.**
+
+Makes sense: color is assigned by a separate module (right-click → color picker) and
+is an attribute of the object, not of the key's state.
+
+**Implication:** the module can use `h<N>color` as an activity indicator (blinks while
+the key is active), but never as "the cuelist's color". Recommended to filter `000000`
+to avoid visual flicker.
+
+---
+
+## 11. BUG — key 12 and page change
+
+Key 12 sometimes causes a malformed address to be sent:
 
 ```
 /hog/status/led/Invalid input        FLOAT(1)
 /hog/status/led/Invalid inputcolor   STRING(ffffff)
 ```
 
-em vez dos esperados `/hog/status/led/h13` e `/hog/status/led/h13color`.
-Capturado ao nível do pacote, correlacionado com a ativação de h13.
+instead of the expected `/hog/status/led/h13` and `/hog/status/led/h13color`.
+Captured at packet level, correlated with h13 activation.
 
-**Hipótese confirmada (2026-08-13):** a tecla física 12 funciona como **mudança de página do
-diretório de comandos**, alternando a vista em blocos de 12 em 12 — não é um defeito da tecla,
-é o comportamento normal da consola quando há mais de 12 comandos disponíveis. Confirmado por
-conhecimento direto do operador sobre o funcionamento da consola (não capturado ao nível do
-pacote como o resto deste documento). Isto explica o endereço malformado: ao mudar de página,
-a tecla 12 deixa de corresponder a um `h<N>` fixo, daí o endereço `Invalid input`.
+**Confirmed hypothesis (2026-08-13):** physical key 12 works as **command directory
+page change**, cycling the view in blocks of 12 — not a key defect, it's normal console
+behavior when there are more than 12 available commands. Confirmed by the operator's
+direct knowledge of how the console works (not packet-captured like the rest of this
+document). This explains the malformed address: when changing page, key 12 stops
+matching a fixed `h<N>`, hence the `Invalid input` address.
 
-O módulo deve tolerar endereços malformados sem falhar.
+The module must tolerate malformed addresses without failing.
 
-**Confirmado (2026-08-14):** a tecla 12 NUNCA funciona como slot de comando normal, em nenhuma
-geração de hardware da consola — é sempre dedicada à mudança de página. O texto que aparece em
-`h12_line1`/`h12_line2` (ex: `"CMD>>"` / `"1 of 2"`) não é um cuelist/scene atribuído nem dado
-desatualizado - é o **próprio rótulo fixo da função de mudança de página** (`"1 of 2"` indica
-quantas páginas de comandos existem). Isto explicou uma observação inicial após um relaunch que
-pareceu ser "dado antigo por limpar" - não era; é o valor correto e esperado para esta tecla.
+**Confirmed (2026-08-14):** key 12 NEVER works as a normal command slot, on any
+generation of console hardware — it's always dedicated to page change. The text shown
+in `h12_line1`/`h12_line2` (e.g. `"CMD>>"` / `"1 of 2"`) is not an assigned
+cuelist/scene, nor stale data — it's the **fixed label of the page-change function
+itself** (`"1 of 2"` indicates how many command pages exist). This explains an initial
+observation after a relaunch that looked like "stale data not yet cleared" — it wasn't;
+it's the correct, expected value for this key.
 
-**Mas a própria função não está a funcionar neste momento (2026-08-14):** premir a tecla física
-12 diretamente na consola (sem passar pelo Companion) não muda de página de comandos. O rótulo
-mostra-se corretamente, mas a ação em si não tem efeito. Não relacionado com o módulo/Companion -
-testado diretamente na consola física.
+**But the function itself isn't working right now (2026-08-14):** pressing physical key
+12 directly on the console (not through Companion) doesn't change the command page. The
+label displays correctly, but the action itself has no effect. Not related to the
+module/Companion — tested directly on the physical console.
 
-**Mas funciona no Hog PC (mesa virtual):** a mesma função de mudança de página de comandos
-funciona corretamente na aplicação Hog PC (software), ao contrário da consola física onde a
-tecla 12 não produz efeito. Sugere um problema específico do hardware físico desta consola (ou
-desta unidade em particular), não da lógica da consola em geral.
+**But it works on Hog PC (virtual console):** the same command-page-change function
+works correctly in the Hog PC application (software), unlike the physical console
+where key 12 has no effect. Suggests an issue specific to this console's physical
+hardware (or this particular unit), not the console's general logic.
 
-**Também não funciona via OSC/Companion (2026-08-14):** testado enviando `press_command_key`
-(tecla 12) a partir de um botão do Companion - `/hog/hardware/h13` (offset +1 aplicado) - e a
-página de comandos não muda, tal como a tecla física. Ou seja, o problema não é só do contacto
-físico da tecla; a própria função de mudança de página associada à tecla 12 não responde,
-mesmo quando acionada via OSC - mas continua a ser um problema do hardware desta consola
-(mesa), não da lógica geral da consola: o envio via OSC chega à mesma mesa física com o mesmo
-problema, enquanto o Hog PC (que corre à parte, sem depender do hardware da mesa) continua a
-funcionar corretamente, como já referido acima. `press_command_key`/`release_command_key` continuam corretos e
-disponíveis no módulo para as outras 11 teclas de comando (uso normal), mas não devem ser
-usados para a tecla 12 com o objetivo de mudar de página - ver `func` abaixo para a alternativa
-que funciona.
+**Also doesn't work via OSC/Companion (2026-08-14):** tested by sending
+`press_command_key` (key 12) from a Companion button — `/hog/hardware/h13` (+1 offset
+applied) — and the command page doesn't change, same as the physical key. In other
+words, the problem isn't only the key's physical contact; the page-change function tied
+to key 12 doesn't respond even when triggered via OSC — but it's still a problem with
+this console's (desk's) hardware, not the console's general logic: the OSC send reaches
+the same physical desk with the same problem, while Hog PC (which runs separately,
+without depending on the desk's hardware) keeps working correctly, as noted above.
+`press_command_key`/`release_command_key` remain correct and available in the module
+for the other 11 command keys (normal use), but should not be used for key 12 for the
+purpose of changing pages — see `func` below for the working alternative.
 
-**Tecla física "FUNC" (2026-08-14, captura Protokol):** produz exatamente o mesmo burst de
-refresh (h6 a h13, `line1`/`line2` a vazio) associado à mudança de página dos command keys
-acima. Não tem caminho OSC documentado em nenhuma das fontes conhecidas (manual oficial nem
-highend-hog4). Combinada com Open (Open+FUNC), abre um diretório/menu de comandos - função
-distinta, não testada ao nível OSC.
+**Physical "FUNC" key (2026-08-14, Protokol capture):** produces exactly the same
+refresh burst (h6 to h13, `line1`/`line2` empty) associated with the command-key page
+change above. Has no OSC path documented in any known source (official manual nor
+highend-hog4). Combined with Open (Open+FUNC), opens a command directory/menu -
+a distinct function, not tested at the OSC level.
 
-**Confirmado (2026-08-14):** `/hog/hardware/func` (padrão de nomenclatura igual aos restantes
-botões de hardware) foi testado a partir do Companion e **muda mesmo de página de comandos** -
-a mesma função que o rótulo da tecla 12 anuncia mas que atualmente não funciona nesta consola
-(ver acima). Adicionado a `HARDWARE_BUTTON_CHOICES` como `func`. Isto dá ao módulo uma forma
-funcional de mudar de página de comandos via Companion enquanto a tecla física 12 não é
-resolvida pela ETC - usar `press_hardware_button`/`release_hardware_button` com `func` em vez
-de `press_command_key`/`release_command_key` com a tecla 12. Solução temporária: até a ETC
-resolver esta discrepância hardware vs. software da tecla 12, o botão físico correspondente
-à tecla 12 no layout de exemplo do Companion foi substituído por `func`.
+**Confirmed (2026-08-14):** `/hog/hardware/func` (same naming pattern as the other
+hardware buttons) was tested from Companion and **does change the command page** — the
+same function that key 12's label advertises but that currently doesn't work on this
+console (see above). Added to `HARDWARE_BUTTON_CHOICES` as `func`. This gives the
+module a working way to change the command page from Companion while physical key 12
+isn't fixed by ETC - use `press_hardware_button`/`release_hardware_button` with `func`
+instead of `press_command_key`/`release_command_key` with key 12. Temporary solution:
+until ETC resolves this hardware-vs-software discrepancy on key 12, the physical key 12
+button in the module's example Companion layout was replaced with `func`.
 
-Nota: a ambiguidade anterior sobre "FUNC sozinha vs Pig+FUNC vs Open+FUNC" referia-se à tecla
-física pressionada diretamente na consola. O teste confirmado aqui é especificamente o envio de
-`/hog/hardware/func` via OSC/Companion (equivalente a "FUNC sozinha"), que resultou numa mudança
-de página visível e consistente.
+Note: the earlier ambiguity about "FUNC alone vs Pig+FUNC vs Open+FUNC" referred to the
+physical key pressed directly on the console. The confirmed test here is specifically
+sending `/hog/hardware/func` via OSC/Companion (equivalent to "FUNC alone"), which
+produced a visible and consistent page change.
 
 ---
 
-## 12. Comportamento das rajadas
+## 12. Burst behavior
 
-Qualquer operação de atribuição/remoção provoca uma **varredura completa** de h2 a h13:
+Any assignment/removal operation triggers a **full sweep** from h2 to h13:
 
 ```
 09:47:52.770  h2/line1  = "test"
 09:47:52.778  h2/line2  = "...."      (+8 ms)
 09:47:52.815  h3/line1  = ""          (+45 ms)
 ...
-09:47:53.135  h10/line2 = ""          (~365 ms no total)
+09:47:53.135  h10/line2 = ""          (~365 ms total)
 ```
 
-É precisamente isto que torna a variável partilhada do `generic-osc` inutilizável, e o que
-o dicionário interno do módulo resolve.
+This is exactly what makes `generic-osc`'s shared variable unusable, and what the
+module's internal dictionary solves.
 
-**Nota adicional:** libertar muitos cuelists em simultâneo ("release all") provoca perda de
-pacotes UDP — alguns indicadores não atualizam. Libertar um a um é 100 % fiável. É uma
-limitação do UDP, não da consola; o módulo pode mitigar reagindo a qualquer atualização
-posterior do mesmo caminho.
+**Additional note:** releasing many cuelists at once ("release all") causes UDP packet
+loss — some indicators don't update. Releasing one at a time is 100% reliable. This is a
+UDP limitation, not the console's; the module can mitigate it by reacting to any later
+update of the same path.
 
-**O dump de relaunch cobre TODO o estado da consola (2026-08-14), não só os command keys.**
-Ao relançar a sessão (logoff + relaunch), a rajada completa inclui masters de playback, botões
-nomeados, e não só `h1`-`h12`. O módulo já tem lógica dedicada para o caso especial dos command
-keys (dump sem offset vs. eventos individuais com offset +1, §5), testada em
-`test/commandKeys.test.ts`; os restantes tipos de variável (masters, botões nomeados, encoders)
-usam o mesmo caminho de parsing simples que já lidam com atualizações individuais, pelo que não
-deverá haver lógica especial em falta para eles - mas por confirmar com uma captura real de um
-relaunch completo antes de dar como definitivamente confirmado.
+**The relaunch dump covers the ENTIRE console state (2026-08-14), not just the command
+keys.** When relaunching the session (logoff + relaunch), the full burst includes
+playback masters, named buttons, and not just `h1`-`h12`. The module already has
+dedicated logic for the command-key special case (no-offset dump vs. +1-offset
+individual events, §5), tested in `test/commandKeys.test.ts`; the other variable types
+(masters, named buttons, encoders) use the same simple parsing path that already
+handles individual updates, so there shouldn't be any special logic missing for them -
+but to be confirmed with a real capture of a full relaunch before considering it
+definitively confirmed.
 
-**Confirmado por captura real de relaunch (2026-08-14):** a rajada completa observada usa
-exatamente os mesmos caminhos já tratados pelo módulo, sem nenhuma novidade:
-- Masters: `/hog/status/led/{choose,go,pause,goback,flash}/<M>` (e as variantes `color`),
-  observados de `M=26` até `M=0` nesta sessão (27 masters "em uso" - não é necessariamente o
-  limite máximo endereçável, só o que a consola tinha atribuído neste show).
-- Command keys: `/hog/status/led/h12` até `/hog/status/led/h1` (sem `line1`/`line2` nesta
-  captura em particular - provavelmente porque não havia nomes atribuídos nesta sessão de
-  teste).
-- Botões nomeados: `time`, `effects`, `beam`, `colour`, `position`, `intensity`, `blind`,
-  `clear`, `highlight`, `macro`, `ratedisabled`, `thruster upper`, `mainhalt`, `mainback`,
-  `maingo`, `dbo` - todos já cobertos por `NAMED_BUTTONS` em `namedButtons.ts`.
+**Confirmed by a real relaunch capture (2026-08-14):** the observed full burst uses
+exactly the same paths already handled by the module, with nothing new:
+- Masters: `/hog/status/led/{choose,go,pause,goback,flash}/<M>` (and the `color`
+  variants), observed from `M=26` down to `M=0` in this session (27 masters "in use" -
+  not necessarily the maximum addressable limit, just what the console had assigned in
+  this show).
+- Command keys: `/hog/status/led/h12` down to `/hog/status/led/h1` (no `line1`/`line2`
+  in this particular capture - probably because no names were assigned in this test
+  session).
+- Named buttons: `time`, `effects`, `beam`, `colour`, `position`, `intensity`, `blind`,
+  `clear`, `highlight`, `macro`, `ratedisabled`, `thruster upper`, `mainhalt`,
+  `mainback`, `maingo`, `dbo` - all already covered by `NAMED_BUTTONS` in
+  `namedButtons.ts`.
 
-Nenhum caminho novo ou inesperado apareceu. O parsing existente (sem lógica especial adicional
-para masters/botões nomeados) já lida corretamente com o dump completo.
+No new or unexpected path appeared. The existing parsing (with no extra special-casing
+for masters/named buttons) already handles the full dump correctly.
 
 ---
 
-## 13. Requisitos do módulo
+## 13. Module requirements
 
-### Variáveis (uma por caminho — o ponto central)
+### Variables (one per path — the central point)
 
 ```
-h<N>_line1        h<N>_line2        h<N>_led        h<N>_color     (N = 1..12, já sem offset)
+h<N>_line1        h<N>_line2        h<N>_led        h<N>_color     (N = 1..12, offset already handled)
 master<M>_go      master<M>_pause   master<M>_goback   master<M>_flash   master<M>_choose
 encoder<E>_label  encoder<E>_value  (E = 1..5)
 commandline
@@ -377,142 +383,145 @@ blind, clear, highlight, dbo, macro, ...
 
 ### Feedbacks
 
-- Estado do LED da command key (boolean)
-- Cor do LED (para borda/preenchimento)
-- Estado dos botões nomeados
-- Estado de go/pause por master
+- Command key LED state (boolean)
+- LED color (for border/fill)
+- Named button state
+- Go/pause state per master
 
-### Ações
+### Actions
 
-- Premir command key (com offset tratado internamente)
-- Premir botão nomeado (Pig, Blind, Clear, Highlight, Release…)
-- Libertar cuelist/scene/macro por número
-- Enviar comando arbitrário na linha de comando
+- Press command key (offset handled internally)
+- Press named button (Pig, Blind, Clear, Highlight, Release…)
+- Release cuelist/scene/macro by number
+- Send an arbitrary command-line command
 
-### Implementação
+### Implementation
 
-- Dicionário interno `Map<path, value>`, atualizado a cada mensagem
-- Persistir valores entre reinícios (não há refresh sob pedido — §9)
-- Tolerar endereços malformados (§11)
-- Aceitar sempre o último valor em labels fragmentados (§3.4)
-
----
-
-## 14. Estado reportado à ETC
-
-Reportado no fórum da comunidade ETC:
-
-1. Offset de +1 nas command keys
-2. `refreshall` / `consoleledrefresh` / `consolefaderrefresh` sem efeito
-3. `line1` não atualiza em reatribuição (desatualizado — ver §8: atualiza sim, via `Move To`)
-
-Comentado na issue **#7** do repositório `bitfocus/companion-module-highend-hog4`
-(pedido de feedback OSC nativo), com estas descobertas.
-
-Relacionadas no módulo `generic-osc`: issues **#76**, **#78**, **#82** — todas a pedir
-captura de valor por caminho para variável. Continuam por implementar na v2.8.2, que é a
-versão mais recente.
+- Internal `Map<path, value>` dictionary, updated on every message
+- Persist values across restarts (no refresh on demand — §9)
+- Tolerate malformed addresses (§11)
+- Always accept the latest value for fragmented labels (§3.4)
 
 ---
 
-## 15. Nomes longos e espaços — quebra de linha imprevisível entre line1/line2
+## 14. State reported to ETC
 
-Confirmado por teste em 2026-08-13: a consola faz **word-wrap automático** do nome do objeto
-entre `line1` e `line2` quando não cabe numa só linha, partindo no espaço mais próximo do
-limite.
+Reported on the ETC community forum:
 
-| Nome atribuído | `line1` | `line2` |
+1. +1 offset on command keys
+2. `refreshall` / `consoleledrefresh` / `consolefaderrefresh` have no effect
+3. `line1` doesn't update on reassignment (stale claim — see §8: it does update, via
+   `Move To`)
+
+Commented on issue **#7** of the `bitfocus/companion-module-highend-hog4` repository
+(request for native OSC feedback), with these findings.
+
+Related in the `generic-osc` module: issues **#76**, **#78**, **#82** — all requesting
+per-path value capture for variables. Still unimplemented in v2.8.2, the latest version.
+
+---
+
+## 15. Long names and spaces — unpredictable line1/line2 wrap
+
+Confirmed by testing on 2026-08-13: the console does automatic **word-wrap** of the
+object's name between `line1` and `line2` when it doesn't fit on one line, breaking at
+the nearest space to the limit.
+
+| Assigned name | `line1` | `line2` |
 |---|---|---|
-| `"again"` (5 carateres) | `again` | *(vazio)* |
-| `"test SC"` (7 carateres, com espaço) | `test` | `SC` |
+| `"again"` (5 characters) | `again` | *(empty)* |
+| `"test SC"` (7 characters, with space) | `test` | `SC` |
 
-Isto **não é** um indicador de tipo de objeto (ver descoberta falsa em baixo) — é apenas
-comportamento de quebra de linha do ecrã físico da consola, aplicável a qualquer objeto
-(cuelist, scene, macro) cujo nome seja demasiado longo.
+This is **not** a type-of-object indicator (see the false discovery below) — it's just
+the physical console screen's line-wrap behavior, applicable to any object (cuelist,
+scene, macro) whose name is too long.
 
-**Descoberta falsa, corrigida:** inicialmente pareceu que `line2 === "SCENE"` distinguia uma
-scene de uma cuelist — coincidência: o nome de teste da scene continha literalmente a palavra
-"SCENE", que calhou de ficar isolada em `line2` após a quebra. **Não existe nenhum campo OSC
-que indique o tipo do objeto** (cuelist vs. scene vs. macro). Ver §13 do README do módulo para
-a conclusão de design (estilo por botão tem de ser escolhido manualmente pelo operador).
+**False discovery, corrected:** it initially looked like `line2 === "SCENE"`
+distinguished a scene from a cuelist — coincidence: the scene's test name literally
+contained the word "SCENE", which happened to land isolated in `line2` after the wrap.
+**There is no OSC field indicating the object's type** (cuelist vs. scene vs. macro).
+See §13 of the module's README for the design conclusion (per-button style has to be
+chosen manually by the operator).
 
-**Fio solto, não confirmado:** durante um rename ao vivo, `line2` mostrou momentaneamente o
-texto a ser digitado (ex. `"222"`) enquanto `line1` ainda tinha o nome antigo confirmado —
-possível eco de digitação em tempo real antes do Enter, semelhante ao `commandline` (§3.5).
-Por confirmar se o mesmo acontece com cuelists, não só scenes.
+**Loose thread, not confirmed:** during a live rename, `line2` momentarily showed the
+text being typed (e.g. `"222"`) while `line1` still had the old, confirmed name -
+possible real-time typing echo before Enter, similar to `commandline` (§3.5). To be
+confirmed whether the same happens with cuelists, not only scenes.
 
-**Limitação a reportar à ETC:** não há forma de reconstruir o nome completo original a partir
-de `line1`+`line2` de forma fiável — nem sempre a quebra acontece num espaço previsível, e o
-próprio comportamento pode mudar em versões futuras do Hog OS. Vale a pena testar novamente
-após cada atualização da consola.
+**Limitation to report to ETC:** there's no reliable way to reconstruct the full
+original name from `line1`+`line2` - the wrap doesn't always happen at a predictable
+space, and the behavior itself may change in future Hog OS versions. Worth re-testing
+after every console update.
 
 ---
 
-## 16. U-Keys — confirmados os 4 modos de interação
+## 16. U-Keys — all 4 interaction modes confirmed
 
-A consola tem **12 U-Keys** (teclas macro configuráveis pelo utilizador), cada uma com **4
-modos de interação** possíveis: pressão simples, duplo clique, Pig+U-key, e Open+U-key.
+The console has **12 U-Keys** (user-configurable macro keys), each with **4** possible
+**interaction modes**: single press, double-click, Pig+U-key, and Open+U-key.
 
-**Confirmado por teste em 2026-08-13 (pressão simples) e 2026-08-14 (os outros 3 modos):**
+**Confirmed by testing on 2026-08-13 (single press) and 2026-08-14 (the other 3
+modes):**
 
 ```
 /hog/hardware/u<N>   0 = up, 1 = down
 ```
 
-Corresponde exatamente ao que o manual da ETC documenta — **sem offset** (ao contrário das
-command keys, §5). `u1` é `u1`, não `u2`. **Os 4 modos de interação produzem exatamente o mesmo
-caminho** — duplo clique, Pig+U-key, e Open+U-key não têm nenhum sinal OSC distinto da pressão
-simples. A distinção entre modos acontece inteiramente no lado da consola (que função a tecla
-executa), não no protocolo OSC.
+Matches exactly what the ETC manual documents — **no offset** (unlike command keys,
+§5). `u1` is `u1`, not `u2`. **All 4 interaction modes produce the exact same path** —
+double-click, Pig+U-key, and Open+U-key have no OSC signal distinct from a single
+press. The distinction between modes happens entirely on the console side (which
+function the key runs), not in the OSC protocol.
 
-**Feedback de status: intencionalmente não existe, por design** (esclarecido pelo utilizador
-2026-08-14) — os U-Keys são configuráveis pelo utilizador para qualquer função (incluindo coisas
-sem estado próprio, como "lock console"), por isso a consola não tem como expor um feedback
-genérico e útil para eles. Isto não é uma lacuna a preencher mais tarde; não faz sentido
-continuar à procura de `/hog/status/u<N>/...`.
+**Status feedback: intentionally doesn't exist, by design** (clarified by the user
+2026-08-14) — U-Keys are user-configurable for any function (including things with no
+state of their own, like "lock console"), so the console has no way to expose a
+generic, useful feedback for them. This isn't a gap to fill later; it makes no sense to
+keep looking for `/hog/status/u<N>/...`.
 
-**Como aplicar:** `press_u_key`/`release_u_key` já implementam o caminho confirmado acima e
-cobrem os 4 modos automaticamente (não há necessidade de ações separadas por modo, já que o
-protocolo é idêntico).
+**How to apply:** `press_u_key`/`release_u_key` already implement the confirmed path
+above and cover all 4 modes automatically (no need for separate actions per mode, since
+the protocol is identical).
 
-**Falsa pista testada e refutada (2026-08-13):** `/hog/hardware/open` foi tentado como o
-caminho da tecla modificadora "Open" (usada em combos como Pig+Open+U-key), por analogia com
-"pig" e por corresponder ao que o projeto separado `companion-module-highend-hog4` já usa no
-seu `HardwareKey`. Testado via Companion contra a consola real — **não fez nada**. Removido de
-`HARDWARE_BUTTON_CHOICES`. O caminho real da tecla Open (se existir) continua desconhecido.
+**False lead tested and disproven (2026-08-13):** `/hog/hardware/open` was tried as the
+path for the "Open" modifier key (used in combos like Pig+Open+U-key), by analogy with
+"pig" and because it matches what the separate `companion-module-highend-hog4` project
+already uses in its `HardwareKey`. Tested via Companion against the real console — **did
+nothing**. Removed from `HARDWARE_BUTTON_CHOICES`. The real path for the Open key (if
+any) remains unknown.
 
-**A consola não ecoa a tecla física Open diretamente, mas produz um sinal indireto (corrigido
-2026-08-14):** captura Protokol de ~16s incluindo 3 pressões físicas da tecla Open na consola —
-sem nenhum evento tipo "hardware key pressed" dedicado, mas com um padrão que se repete
-exatamente 3 vezes, coincidindo com as 3 pressões:
+**The console doesn't echo the physical Open key directly, but produces an indirect
+signal (corrected 2026-08-14):** a ~16s Protokol capture including 3 physical presses
+of the Open key on the console — no dedicated "hardware key pressed"-type event, but a
+pattern that repeats exactly 3 times, coinciding with the 3 presses:
 
 ```
 /hog/status/encoderwheel1/label   STRING(Scroll Up/Down)
 /hog/status/encoderwheel2/label   STRING(Scroll Left/Right)
 /hog/status/encoderwheel3/label   STRING(Zoom)
-... ~0.3s depois ...
+... ~0.3s later ...
 /hog/status/encoderwheel1/label   STRING()
 /hog/status/encoderwheel2/label   STRING()
 /hog/status/encoderwheel3/label   STRING()
 ```
 
-Estas labels correspondem exatamente à documentação oficial da ETC
-(chap-magic_keys_combos.htm): "Open + encoder wheels: Controls vertical/horizontal scrolling
-and zooming". Conclusão: Open não tem o seu próprio caminho hardware/status — em vez disso,
-**premir Open faz a consola re-rotular temporariamente os encoder wheels** para refletir a
-função que passam a ter enquanto Open está premido, e as labels voltam a vazio quando Open é
-largado. Isto é um sinal indireto mas real e reproduzível de "Open está premido/largado", útil
-como proxy caso seja preciso construir uma feedback para isto no futuro - mas não é um caminho
-`/hog/hardware/open` dedicado, e continua sem se saber se existe algum caminho send-only para
-simular a própria pressão de Open a partir do Companion.
+These labels match exactly the official ETC documentation
+(chap-magic_keys_combos.htm): "Open + encoder wheels: Controls vertical/horizontal
+scrolling and zooming". Conclusion: Open doesn't have its own hardware/status path —
+instead, **pressing Open makes the console temporarily relabel the encoder wheels** to
+reflect the function they take on while Open is held, and the labels go back to empty
+when Open is released. This is an indirect but real and reproducible signal of "Open is
+pressed/released", useful as a proxy if a feedback for this is ever needed - but it's
+not a dedicated `/hog/hardware/open` path, and it's still unknown whether any send-only
+path exists to simulate pressing Open itself from Companion.
 
 ---
 
-## 17. Teclas de programação (macro/list/page/delete/move/update/setup/goto/set) — não verificadas
+## 17. Programming keys (macro/list/page/delete/move/update/setup/goto/set) — unverified
 
-Adicionadas a `HARDWARE_BUTTON_CHOICES` (2026-08-14) a partir do projeto separado
-`bitfocus/companion-module-highend-hog4`, cujo `src/setup.js` já lista estes ids exatos em
-`Choices.HardwareKey`:
+Added to `HARDWARE_BUTTON_CHOICES` (2026-08-14) from the separate
+`bitfocus/companion-module-highend-hog4` project, whose `src/setup.js` already lists
+these exact ids in `Choices.HardwareKey`:
 
 ```
 /hog/hardware/macro
@@ -526,14 +535,15 @@ Adicionadas a `HARDWARE_BUTTON_CHOICES` (2026-08-14) a partir do projeto separad
 /hog/hardware/set
 ```
 
-Esta fonte já tinha acertado em todos os outros ids já confirmados deste módulo (pig, release,
-blind, highlight, clear, next, back, record, merge, copy) — mas também listava "open", que
-testámos e refutámos (§16). **Por isso: boa pista, não prova.** Cada uma destas 9 continua por
-testar contra a consola real antes de se considerar confirmada.
+This source already got right every other id already confirmed in this module (pig,
+release, blind, highlight, clear, next, back, record, merge, copy) — but it also listed
+"open", which we tested and disproved (§16). **So: a good lead, not proof.** Each of
+these 9 remains to be tested against the real console before being considered
+confirmed.
 
-**Cópia em massa do resto do `HardwareKey` (2026-08-14):** o resto da lista de
-`companion-module-highend-hog4` foi também copiado para `HARDWARE_BUTTON_CHOICES`, para uso
-futuro, com o mesmo aviso de "não verificado":
+**Bulk copy of the rest of `HardwareKey` (2026-08-14):** the rest of
+`companion-module-highend-hog4`'s list was also copied into `HARDWARE_BUTTON_CHOICES`,
+for future use, with the same "unverified" warning:
 
 ```
 /hog/hardware/zero .. /hog/hardware/nine, /period, /at, /minus, /plus, /slash, /thru, /full,
@@ -544,127 +554,132 @@ futuro, com o mesmo aviso de "não verificado":
 
 ---
 
-## 18. Master Key press/release (Choose/Go/Pause/Back/Flash) — confirmado pelo manual oficial
+## 18. Master Key press/release (Choose/Go/Pause/Back/Flash) — confirmed by the official manual
 
-`HARDWARE_BUTTON_CHOICES` cobre teclas fixas, mas os masters de playback (§3.3) têm as suas
-próprias teclas físicas Choose/Go/Pause/Back/Flash por master (a Gig Hog tem 5 masters físicos;
-outras mesas Hog têm 10 por banco - ver §21). Não havia nenhuma ação para as premir a partir do
-Companion - só as variáveis de status já existiam.
+`HARDWARE_BUTTON_CHOICES` covers fixed keys, but playback masters (§3.3) have their own
+physical Choose/Go/Pause/Back/Flash keys per master (the Gig Hog has 5 physical
+masters; other Hog consoles have 10 per bank - see §21). There was no action to press
+them from Companion - only the status variables already existed.
 
-Inicialmente sourced de `bitfocus/companion-module-highend-hog4`'s `src/actions.js` (ação
-`masterKey`), e **desde 2026-08-14 confirmado também pelo manual oficial da ETC**
-(`sect-osc_mappings.htm`, secção 22.4.3 "OSC Button Mappings"):
+Initially sourced from `bitfocus/companion-module-highend-hog4`'s `src/actions.js`
+(`masterKey` action), and **since 2026-08-14 also confirmed by the official ETC
+manual** (`sect-osc_mappings.htm`, section 22.4.3 "OSC Button Mappings"):
 
 ```
 /hog/hardware/choose/master#
 /hog/hardware/go/master#
 /hog/hardware/pause/master#
-/hog/hardware/goback/master#      (tecla "Back")
+/hog/hardware/goback/master#      ("Back" key)
 /hog/hardware/flash/master#
 ```
 
-Valor: 1 = tecla premida, 0 = tecla largada. Nomes coincidem exatamente com os já confirmados
-por captura de pacote em §3.3. Implementado como `press_master_key`/`release_master_key`.
+Value: 1 = key pressed, 0 = key released. Names match exactly the ones already
+confirmed by packet capture in §3.3. Implemented as
+`press_master_key`/`release_master_key`.
 
-**Testado em 2026-08-14, resultado NEGATIVO**: `choose` premido via Companion no Master 1 -
-**não funciona** (não seleciona o master de forma útil). Uma captura Protokol da mesma janela
-mostrou mudanças nos encoder wheels e no LED do choose, mas o utilizador confirmou que essas
-mudanças não foram causadas pelo nosso botão (coincidência/estado pré-existente) - lição:
-correlacionar timestamps de um log com uma ação não é prova sem confirmação direta de causa e
-efeito. Removido de `MASTER_KEY_CHOICES` - mesmo padrão do "open"/"slash" (duas fontes
-concordantes, mas testado e refutado). `go`/`pause`/`goback`/`flash` continuam por testar, mesmo
-aviso.
+**Tested on 2026-08-14, NEGATIVE result**: `choose` pressed via Companion on Master 1 -
+**doesn't work** (doesn't select the master in any useful way). A Protokol capture of
+the same window showed changes in the encoder wheels and the choose LED, but the user
+confirmed those changes weren't caused by our button (coincidence/pre-existing state) -
+lesson: correlating log timestamps with an action isn't proof without direct
+confirmation of cause and effect. Removed from `MASTER_KEY_CHOICES` - same pattern as
+"open"/"slash" (two agreeing sources, but tested and disproven).
+`go`/`pause`/`goback`/`flash` remain untested, same caveat.
 
-**Nota do utilizador (2026-08-14) sobre despriorizar mais testes aqui**: estas teclas de master
-(o conceito de Choose/Go/Pause/Back/Flash por master tal como documentado) existem na Hog 4 mas
-deixaram de existir da mesma forma nas gerações mais recentes da consola Hog - por isso não
-compensa insistir em testar exaustivamente `go`/`pause`/`goback`/`flash` nem o Grand Master
-Fader/Encoder Wheels (§20) para já. Mantidos no código para compatibilidade com quem ainda usa
-Hog 4, mas não são prioridade de teste continuado nesta sessão.
+**User note (2026-08-14) on deprioritizing further testing here**: these master keys
+(the Choose/Go/Pause/Back/Flash-per-master concept as documented) exist on Hog 4 but no
+longer exist in the same form on more recent generations of the Hog console - so it's
+not worth exhaustively testing `go`/`pause`/`goback`/`flash` or the Grand Master
+Fader/Encoder Wheels (§20) for now. Kept in the code for compatibility with anyone
+still using Hog 4, but not a priority for continued testing in this session.
 
-O manual (secção 22.4.3 completa) também confirma exatamente os ids já copiados em massa de
-`HARDWARE_BUTTON_CHOICES` (§17): `ewheelbutton/#`, `iwheelup`, `iwheeldown`, `pig`, `period`,
-`up`/`down`/`left`/`right`, `at`/`minus`/`plus`, `backspace`, `h#` (function/command keys),
-`maingo`/`mainhalt`/`mainback`/`mainchoose`, `skipfwd`/`skipback`, `zero`..`nine` - agora com a
-mesma dupla confirmação.
+The manual (full section 22.4.3) also confirms exactly the ids already bulk-copied into
+`HARDWARE_BUTTON_CHOICES` (§17): `ewheelbutton/#`, `iwheelup`, `iwheeldown`, `pig`,
+`period`, `up`/`down`/`left`/`right`, `at`/`minus`/`plus`, `backspace`, `h#`
+(function/command keys), `maingo`/`mainhalt`/`mainback`/`mainchoose`,
+`skipfwd`/`skipback`, `zero`..`nine` - now with the same double confirmation.
 
-**Falsa pista testada e refutada (2026-08-14): `/hog/hardware/slash`.** Apesar de confirmado
-por DUAS fontes independentes (manual §22.4.3 e highend-hog4), testado via Companion contra a
-consola real e **não fez nada** — mesmo padrão do "open" (§16). Importante: a tecla física "/"
-funciona normalmente na consola e o eco correspondente chega bem a `/hog/status/commandline`
-(confirmado por captura Protokol) — só o caminho de ENVIO está errado, não a receção. Removido
-de `HARDWARE_BUTTON_CHOICES`. Lição: nem duas fontes concordantes substituem teste real.
+**False lead tested and disproven (2026-08-14): `/hog/hardware/slash`.** Despite being
+confirmed by TWO independent sources (manual §22.4.3 and highend-hog4), tested via
+Companion against the real console and **did nothing** — same pattern as "open" (§16).
+Important: the physical "/" key works normally on the console and the corresponding
+echo reaches `/hog/status/commandline` fine (confirmed by Protokol capture) — only the
+SEND path is wrong, not reception. Removed from `HARDWARE_BUTTON_CHOICES`. Lesson: not
+even two agreeing sources replace real testing.
 
-**`goto` — inconclusivo, não refutado (2026-08-14).** Testado via Companion e não fez nada, mas
-ao contrário do "open"/"slash", isto **não prova que o caminho OSC esteja errado** — a própria
-função "Goto" também não funciona premindo a tecla física na consola nesta versão do Hog OS
-(suspeita de bug da própria consola, não do módulo). Mantido em `HARDWARE_BUTTON_CHOICES` como
-está; por reconfirmar numa versão do Hog OS onde a função Goto esteja a funcionar.
+**`goto` — inconclusive, not disproven (2026-08-14).** Tested via Companion and did
+nothing, but unlike "open"/"slash", this **doesn't prove the OSC path is wrong** — the
+"Goto" function itself also doesn't work when pressing the physical key on the console
+in this Hog OS version (suspected console-side bug, not the module's). Kept in
+`HARDWARE_BUTTON_CHOICES` as is; to be re-confirmed on a Hog OS version where the Goto
+function works.
 
-## 19. Playback Go/Halt/Resume — confirmado pelo manual oficial (novo, não implementado ainda)
+## 19. Playback Go/Halt/Resume — confirmed by the official manual (new, not implemented yet)
 
-Secção 22.4.1 do manual ("OSC Playback Mappings") confirma o mesmo padrão já usado por
-`release_playback_item`, mas revela três ações em falta no módulo:
-
-```
-/hog/playback/go/<type>       valor = <número>            (ou <número>.<cue#> para ir a uma cue específica dentro de um cuelist)
-/hog/playback/halt/<type>     valor = <número>
-/hog/playback/resume/<type>   valor = <número>
-/hog/playback/release/<type>  valor = <número>             (já confirmado e implementado)
-```
-
-`<type>`: 0=Cuelist, 1=Scene, 2=Macro (mesmos valores de `PLAYBACK_ITEM_CHOICES`). O caminho é
-fixo por tipo de item; o número do cuelist/scene/macro vai no valor da mensagem OSC, não no
-caminho - exatamente como `release_playback_item` já faz. "Resume" só é documentado para
-cuelists no manual, mas a tabela lista o mesmo caminho genérico `/hog/playback/resume/<type>`
-para todos os tipos.
-
-**Testado em 2026-08-14, resultado NEGATIVO**: `go_playback_item`/`halt_playback_item`/
-`resume_playback_item` testados via Companion (Cuelist 1) - nenhum funcionou. Ao contrário de
-`release_playback_item` (já confirmado a funcionar), estes três não produziram efeito nenhum.
-Mantidos no código (não removidos) por decisão do utilizador - podem passar a funcionar numa
-versão futura do Hog OS, ou pode haver um pré-requisito não documentado (ex: o item já ter sido
-"escolhido"/chosen antes - o que por si também não está confirmado a funcionar, ver §18). Por
-reconfirmar quando houver mais informação da ETC.
-
-## 20. Faders, Encoders, e Trackball — confirmado pelo manual oficial (novo, não implementado ainda)
-
-Secção 22.4.4 do manual ("OSC Fader and Encoder Mappings") - caminhos send-only (Companion →
-consola), valores contínuos em vez de 1/0:
+Manual section 22.4.1 ("OSC Playback Mappings") confirms the same pattern already used
+by `release_playback_item`, but reveals three actions missing from the module:
 
 ```
-/hog/hardware/posmode              0 = toggle off, 1 = toggle on (modo de posição do trackball)
-/hog/hardware/trackball             valores X,Y
-/hog/hardware/fader/0               0-255 (Grand Master Fader - master 0 é o Grand Master)
-/hog/hardware/encoderwheel/#        -20 a 20 (valor variável, main encoder wheels)
-/hog/hardware/ratewheel              -20 a 20 (valor variável)
-/hog/hardware/iwheel                  -20 a 20 (valor variável)
+/hog/playback/go/<type>       value = <number>            (or <number>.<cue#> to go to a specific cue within a cuelist)
+/hog/playback/halt/<type>     value = <number>
+/hog/playback/resume/<type>   value = <number>
+/hog/playback/release/<type>  value = <number>             (already confirmed and implemented)
 ```
 
-Nota: `/hog/hardware/fader/<M>` usa o mesmo padrão do `masterFader` do highend-hog4 (§18), mas
-agora com `M=0` confirmado como sendo especificamente o Grand Master, não um master de playback
-normal - por verificar se `fader/<M>` com M>0 funciona da mesma forma para os outros masters.
+`<type>`: 0=Cuelist, 1=Scene, 2=Macro (same values as `PLAYBACK_ITEM_CHOICES`). The path
+is fixed per item type; the cuelist/scene/macro number goes in the OSC message's value,
+not in the path - exactly as `release_playback_item` already does. "Resume" is only
+documented for cuelists in the manual, but the table lists the same generic
+`/hog/playback/resume/<type>` path for all types.
 
-## 21. Estrutura de bancos de masters — confirmada visualmente no Hog PC, endereçamento OSC por confirmar
+**Tested on 2026-08-14, NEGATIVE result**: `go_playback_item`/`halt_playback_item`/
+`resume_playback_item` tested via Companion (Cuelist 1) - none worked. Unlike
+`release_playback_item` (already confirmed working), these three produced no effect at
+all. Kept in the code (not removed) by the user's decision - they might start working in
+a future Hog OS version, or there might be an undocumented prerequisite (e.g. the item
+already having been "chosen" beforehand - which itself isn't confirmed to work either,
+see §18). To be re-confirmed when more information from ETC is available.
 
-Segundo o utilizador (2026-08-14): a consola organiza os masters físicos em **9 bancos
-(numerados 0-8)**, cada um com **10 masters físicos** (Fader + Back + Pause + Play/Go + Choose
-por master) - um total teórico de 90 masters endereçáveis. Isto é mais alto que os 36 já
-confirmados por captura de pacote em §3.3.
+## 20. Faders, Encoders, and Trackball — confirmed by the official manual (new, not implemented yet)
 
-**Confirmado visualmente (2026-08-14)** a partir de um vídeo do Hog PC (`Virtual Wing Window`,
-frames extraídos com `ffmpeg`): a janela mostra claramente "Master Segment N" com N=0 a 8 (9
-separadores), e cada segmento mostra 10 masters numerados continuamente:
+Manual section 22.4.4 ("OSC Fader and Encoder Mappings") - send-only paths (Companion →
+console), continuous values instead of 1/0:
+
+```
+/hog/hardware/posmode              0 = toggle off, 1 = toggle on (trackball position mode)
+/hog/hardware/trackball             X,Y values
+/hog/hardware/fader/0               0-255 (Grand Master Fader - master 0 is the Grand Master)
+/hog/hardware/encoderwheel/#        -20 to 20 (variable value, main encoder wheels)
+/hog/hardware/ratewheel              -20 to 20 (variable value)
+/hog/hardware/iwheel                  -20 to 20 (variable value)
+```
+
+Note: `/hog/hardware/fader/<M>` uses the same pattern as highend-hog4's `masterFader`
+(§18), but now with `M=0` confirmed to specifically be the Grand Master, not a normal
+playback master - to be checked whether `fader/<M>` with M>0 works the same way for the
+other masters.
+
+## 21. Master bank structure — confirmed visually on Hog PC, OSC addressing to be confirmed
+
+Per the user (2026-08-14): the console organizes physical masters into **9 banks
+(numbered 0-8)**, each with **10 physical masters** (Fader + Back + Pause + Play/Go +
+Choose per master) - a theoretical total of 90 addressable masters. This is higher than
+the 36 already confirmed by packet capture in §3.3.
+
+**Confirmed visually (2026-08-14)** from a Hog PC video (`Virtual Wing Window`, frames
+extracted with `ffmpeg`): the window clearly shows "Master Segment N" with N=0 to 8 (9
+tabs), and each segment shows 10 continuously-numbered masters:
 - Segment 0 → masters 1-10
 - Segment 2 → masters 21-30
 - Segment 5 → masters 51-60
 - Segment 8 → masters 81-90
 
-Confirma exatamente a estrutura 9×10=90 descrita pelo utilizador. **O que continua por
-verificar**: como isto mapeia para o índice `<M>` usado nos caminhos OSC já confirmados em §18
-(`/hog/hardware/go/master#` etc.) e em §3.3 - por exemplo, se o "Master 1" mostrado na UI
-corresponde a `master#=0` (índice 0-based, como os U-Keys) ou a `master#=1`, e se os 36 já
-confirmados por captura correspondem aos segmentos 0-3 (parcial) ou a outra distribuição. Não
-mudar `MASTER_COUNT` nem construir UI de bancos sem confirmar o índice exato com uma captura
-real. A Gig Hog especificamente só mostra 5 masters físicos de cada vez (vs. 10 no Hog PC/outras
-mesas), mas deve endereçar o mesmo espaço lógico de 90 masters via OSC.
+Confirms exactly the 9×10=90 structure described by the user. **What remains to be
+verified**: how this maps to the `<M>` index used in the OSC paths already confirmed in
+§18 (`/hog/hardware/go/master#` etc.) and in §3.3 - for example, whether the "Master 1"
+shown in the UI corresponds to `master#=0` (0-based index, like the U-Keys) or to
+`master#=1`, and whether the 36 already confirmed by capture correspond to segments 0-3
+(partial) or some other distribution. Don't change `MASTER_COUNT` or build banked UI
+without confirming the exact index with a real capture. The Gig Hog specifically only
+shows 5 physical masters at a time (vs. 10 on Hog PC/other consoles), but should
+address the same logical 90-master space over OSC.
