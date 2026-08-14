@@ -265,6 +265,19 @@ a tecla 12 deixa de corresponder a um `h<N>` fixo, daí o endereço `Invalid inp
 
 O módulo deve tolerar endereços malformados sem falhar.
 
+**Tecla física "FUNC" (2026-08-14, captura Protokol):** produz exatamente o mesmo burst de
+refresh (h6 a h13, `line1`/`line2` a vazio) associado à mudança de página dos command keys
+acima. Não tem caminho OSC documentado em nenhuma das fontes conhecidas (manual oficial nem
+highend-hog4). Combinada com Open (Open+FUNC), abre um diretório/menu de comandos - função
+distinta, não testada ao nível OSC. `FUNC` sozinha ainda não tem um caminho `/hog/hardware/...`
+confirmado nem sequer palpitado - por investigar se algum dia for preciso enviá-la a partir do
+Companion.
+
+**Pig+FUNC muda mesmo de página visivelmente** nos command keys (confirmado pelo utilizador) -
+ao contrário de FUNC sozinha, que envia o mesmo burst OSC mas sem mudança visível equivalente
+na consola neste momento. Sugere que Pig+FUNC é a combinação funcionalmente correta/fiável para
+esta mudança de página, não FUNC isolada.
+
 ---
 
 ## 12. Comportamento das rajadas
