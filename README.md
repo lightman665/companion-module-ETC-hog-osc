@@ -119,6 +119,14 @@ one deleted button, import the template into an empty/spare page instead of
 your customized one, copy just that button back over, then delete the spare
 page.
 
+### Page navigation
+
+If you're on a 5-column surface (e.g. a 15-key Stream Deck, 5x3), every template
+page above intentionally leaves **column 5, rows 2 and 3** free - that's where
+the page navigation buttons live (`Internal: Page Up` / `Internal: Page Down`).
+Keeping these two positions free and consistent across all your own pages makes
+it easy to jump between pages without hunting for a free slot on each one.
+
 ### Why no Presets tab yet
 
 This module's source includes a full set of Presets (`src/presets.ts`) matching
