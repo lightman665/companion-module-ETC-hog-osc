@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "main": "dist/main.js",
+  "main": "companion/main.js",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "node --import tsx --test test/**/*.test.ts",

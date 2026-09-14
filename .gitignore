@@ -5,3 +5,4 @@ pkg/
 *.log
 .DS_Store
 .claude/
+companion/*.js
